@@ -1,0 +1,12 @@
+/.gradle/
+/.idea/
+/.vscode/
+/local.properties
+*.iml
+**/build/
+/app/build/
+/app/release/
+/app/debug/
+/captures/
+/gradle-8.2/
+/gradle-8.2-bin.zip
