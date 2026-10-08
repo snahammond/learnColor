@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
 
         setMode(ColorMode.BASIC);
+        binding.modeOptions.setVisibility(View.GONE);
     }
 
     @Override
@@ -94,8 +95,35 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         List<ColorChoice> options = (mode == ColorMode.BASIC) ? basicColors : advancedColors;
         currentSelection = options.get(0);
+        updateModeControls();
         updateColorStrip();
         updatePreview();
+    }
+
+    private void updateModeControls() {
+        binding.basicModeButton.setBackgroundTintList(
+                android.content.res.ColorStateList.valueOf(
+                        currentMode == ColorMode.BASIC ? Color.parseColor("#6200EE") : Color.parseColor("#E0E0E0")
+                )
+        );
+        binding.advancedModeButton.setBackgroundTintList(
+                android.content.res.ColorStateList.valueOf(
+                        currentMode == ColorMode.ADVANCED ? Color.parseColor("#6200EE") : Color.parseColor("#E0E0E0")
+                )
+        );
+
+        binding.basicModeButton.setTextColor(
+                currentMode == ColorMode.BASIC ? Color.WHITE : Color.BLACK
+        );
+        binding.advancedModeButton.setTextColor(
+                currentMode == ColorMode.ADVANCED ? Color.WHITE : Color.BLACK
+        );
+
+        binding.modeMenuButton.setBackgroundTintList(
+                android.content.res.ColorStateList.valueOf(
+                        currentMode == ColorMode.BASIC ? Color.parseColor("#1A1A1A") : Color.parseColor("#6200EE")
+                )
+        );
     }
 
     private void updateColorStrip() {

@@ -7,6 +7,9 @@
 /app/build/
 /app/release/
 /app/debug/
+/apk/
 /captures/
+/ui-preview/
+/ui preview/
 /gradle-8.2/
 /gradle-8.2-bin.zip
