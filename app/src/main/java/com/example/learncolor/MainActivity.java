@@ -30,11 +30,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private static final float TODDLER_SPEECH_RATE = 0.7f;
     private static final String PREFS_NAME = "learn_color_settings";
     private static final String PREF_JINGLE = "selected_jingle";
+    private static final String PREF_BOUNCE_SPEED = "selected_bounce_speed";
+    private static final int DEFAULT_BOUNCE_SPEED = 5;
 
     private ActivityMainBinding binding;
     private TextToSpeech textToSpeech;
     private MediaPlayer jinglePlayer;
     private int selectedJingleResId = SettingsActivity.DEFAULT_JINGLE;
+    private int bounceSpeed = DEFAULT_BOUNCE_SPEED;
     private ObjectAnimator shimmerAnimator;
     private ObjectAnimator pulseAnimator;
     private ObjectAnimator labelAnimator;
@@ -72,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         textToSpeech = new TextToSpeech(this, this);
         selectedJingleResId = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getInt(PREF_JINGLE, SettingsActivity.DEFAULT_JINGLE);
+        bounceSpeed = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt(PREF_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED);
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
@@ -117,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_MODE,
                 currentMode == ColorMode.BASIC ? 0 : 1);
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
+        intent.putExtra(SettingsActivity.EXTRA_BOUNCE_SPEED, bounceSpeed);
         startActivityForResult(intent, REQUEST_SETTINGS);
     }
 
@@ -127,11 +133,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK && data != null) {
             int selectedMode = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_MODE, 0);
             int selectedJingle = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
+            int selectedBounceSpeed = data.getIntExtra(SettingsActivity.EXTRA_BOUNCE_SPEED, bounceSpeed);
             selectedJingleResId = selectedJingle;
+            bounceSpeed = selectedBounceSpeed;
             saveSelectedJingle();
+            saveBounceSpeed();
             setMode(selectedMode == 0 ? ColorMode.BASIC : ColorMode.ADVANCED);
             stopJingleLoop();
             startJingleLoop();
+            startLivingPreviewAnimation();
         }
     }
 
@@ -268,43 +278,49 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (previewBounceAnimator != null) previewBounceAnimator.cancel();
         if (previewRotateAnimator != null) previewRotateAnimator.cancel();
 
+        int animationDuration = resolveBounceDuration(bounceSpeed);
+
         shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
-        shimmerAnimator.setDuration(1800);
+        shimmerAnimator.setDuration(Math.max(800, animationDuration));
         shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         shimmerAnimator.start();
 
-        binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
-        binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
+        binding.colorPreview.post(() -> {
+            binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
+            binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
+            binding.colorPreview.setScaleX(0.35f);
+            binding.colorPreview.setScaleY(0.35f);
+        });
 
         pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.72f, 1.12f, 0.9f, 1.18f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.72f, 1.12f, 0.9f, 1.18f, 1.0f)
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f)
         );
-        pulseAnimator.setDuration(1100);
+        pulseAnimator.setDuration(animationDuration);
         pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         pulseAnimator.setRepeatMode(ObjectAnimator.RESTART);
         pulseAnimator.start();
 
         previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -10f, 14f, -12f, 8f, 0f),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -18f, 14f, -10f, 0f)
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -8f, 10f, -10f, 6f, 0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -14f, 10f, -6f, 0f)
         );
-        previewBounceAnimator.setDuration(1400);
+        previewBounceAnimator.setDuration(animationDuration);
         previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewBounceAnimator.start();
 
-        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -3f, 4f, -3f, 2f, 0f);
-        previewRotateAnimator.setDuration(1600);
+        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -2f, 3f, -2f, 1f, 0f);
+        previewRotateAnimator.setDuration(Math.max(1000, animationDuration + 200));
         previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewRotateAnimator.start();
 
-        labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -18f, 12f, -8f, 0f);
-        labelAnimator.setDuration(900);
+        labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -12f, 8f, -6f, 0f);
+        labelAnimator.setDuration(Math.max(700, animationDuration - 300));
         labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         labelAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         labelAnimator.start();
@@ -362,6 +378,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .edit()
                 .putInt(PREF_JINGLE, selectedJingleResId)
                 .apply();
+    }
+
+    private void saveBounceSpeed() {
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .putInt(PREF_BOUNCE_SPEED, bounceSpeed)
+                .apply();
+    }
+
+    private int resolveBounceDuration(int speed) {
+        int clampedSpeed = Math.max(1, Math.min(10, speed));
+        return Math.max(650, 2200 - (clampedSpeed - 1) * 180);
     }
 
     private void speakCurrentColor() {
