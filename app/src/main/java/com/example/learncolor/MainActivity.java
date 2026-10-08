@@ -1,8 +1,14 @@
 package com.example.learncolor;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -25,6 +31,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private ActivityMainBinding binding;
     private TextToSpeech textToSpeech;
+    private ToneGenerator toneGenerator;
+    private ObjectAnimator shimmerAnimator;
+    private ObjectAnimator pulseAnimator;
+    private ObjectAnimator labelAnimator;
+    private ValueAnimator previewAnimator;
+    private int displayedPreviewColor = Color.RED;
 
     private final List<ColorChoice> basicColors = new ArrayList<>(Arrays.asList(
             new ColorChoice("Red", Color.RED),
@@ -53,12 +65,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(binding.getRoot());
 
         textToSpeech = new TextToSpeech(this, this);
+        toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 70);
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
 
         setMode(ColorMode.BASIC);
         binding.modeOptions.setVisibility(View.GONE);
+        startLivingPreviewAnimation();
     }
 
     @Override
@@ -70,10 +84,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     protected void onDestroy() {
+        if (toneGenerator != null) {
+            toneGenerator.release();
+        }
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+        stopLivingPreviewAnimation();
         super.onDestroy();
     }
 
@@ -158,13 +176,41 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void updatePreview() {
-        int color = currentSelection.getColor();
+        int targetColor = currentSelection.getColor();
+        animatePreviewToColor(targetColor);
+        binding.colorLabel.setText(currentSelection.getName());
+        playSelectionTone();
+    }
 
+    private void animatePreviewToColor(int targetColor) {
+        if (previewAnimator != null) {
+            previewAnimator.cancel();
+        }
+
+        final int startColor = displayedPreviewColor;
+        previewAnimator = ValueAnimator.ofFloat(0f, 1f);
+        previewAnimator.setDuration(550);
+        previewAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        previewAnimator.addUpdateListener(animation -> {
+            float fraction = (float) animation.getAnimatedValue();
+            int blendedColor = (Integer) new ArgbEvaluator().evaluate(fraction, startColor, targetColor);
+            applyPreviewColor(blendedColor);
+        });
+        previewAnimator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(android.animation.Animator animation) {
+                displayedPreviewColor = targetColor;
+            }
+        });
+        previewAnimator.start();
+    }
+
+    private void applyPreviewColor(int color) {
         GradientDrawable previewBackground = new GradientDrawable();
         previewBackground.setShape(GradientDrawable.RECTANGLE);
         previewBackground.setColor(color);
         previewBackground.setCornerRadius(dpToPx(32));
-        previewBackground.setStroke(dpToPx(2), Color.argb(120, 255, 255, 255));
+        previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
         binding.colorPreview.setBackground(previewBackground);
 
         GradientDrawable overlayBackground = new GradientDrawable(
@@ -187,7 +233,54 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpToPx(32));
             }
         });
-        binding.colorLabel.setText(currentSelection.getName());
+    }
+
+    private void startLivingPreviewAnimation() {
+        if (shimmerAnimator != null) shimmerAnimator.cancel();
+        if (pulseAnimator != null) pulseAnimator.cancel();
+        if (labelAnimator != null) labelAnimator.cancel();
+
+        shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
+        shimmerAnimator.setDuration(2200);
+        shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        shimmerAnimator.start();
+
+        pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                binding.colorPreview,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.03f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.03f, 1.0f)
+        );
+        pulseAnimator.setDuration(1800);
+        pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        pulseAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        pulseAnimator.start();
+
+        labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -8f, 0f);
+        labelAnimator.setDuration(1400);
+        labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        labelAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        labelAnimator.start();
+    }
+
+    private void stopLivingPreviewAnimation() {
+        if (shimmerAnimator != null) {
+            shimmerAnimator.cancel();
+        }
+        if (pulseAnimator != null) {
+            pulseAnimator.cancel();
+        }
+        if (labelAnimator != null) {
+            labelAnimator.cancel();
+        }
+    }
+
+    private void playSelectionTone() {
+        if (toneGenerator == null) {
+            return;
+        }
+
+        toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 150);
     }
 
     private void speakCurrentColor() {
