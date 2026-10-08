@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -79,7 +80,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .getInt(PREF_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED);
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
-        binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
+        binding.colorPreview.setOnClickListener(v -> {
+            triggerPartyPopper();
+            speakCurrentColor();
+        });
 
         setMode(ColorMode.BASIC);
         binding.modeOptions.setVisibility(View.GONE);
@@ -210,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         currentSelection = choice;
         updateColorStrip();
         updatePreview();
+        speakCurrentColor();
     }
 
     private void updatePreview() {
@@ -389,7 +394,69 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private int resolveBounceDuration(int speed) {
         int clampedSpeed = Math.max(1, Math.min(10, speed));
-        return Math.max(650, 2200 - (clampedSpeed - 1) * 180);
+        double visualSpeed = 1 + ((clampedSpeed - 1) * 5.0 / 9.0);
+        return (int) Math.max(650, 2200 - (visualSpeed - 1) * 180);
+    }
+
+    private void triggerPartyPopper() {
+        final int[] popColors = new int[] {
+                Color.WHITE,
+                currentSelection.getColor(),
+                Color.parseColor("#FFD54F"),
+                Color.parseColor("#FF6F61"),
+                Color.parseColor("#7C4DFF"),
+                Color.parseColor("#4DD0E1")
+        };
+
+        for (int i = 0; i < 12; i++) {
+            final View particle = new View(this);
+            int size = dpToPx(10 + (i % 4) * 3);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+            int centerX = binding.colorPreview.getWidth() / 2;
+            int centerY = binding.colorPreview.getHeight() / 2;
+            params.leftMargin = centerX - size / 2;
+            params.topMargin = centerY - size / 2;
+            particle.setLayoutParams(params);
+            particle.setBackground(createCircleColor(popColors[i % popColors.length]));
+            particle.setAlpha(1f);
+            binding.colorPreview.addView(particle);
+
+            float dx = (float) ((Math.random() * 220f) - 110f);
+            float dy = (float) ((Math.random() * 220f) - 110f) - 30f;
+            float rotation = (float) ((Math.random() * 360f) - 180f);
+
+            ObjectAnimator xAnimator = ObjectAnimator.ofFloat(particle, View.TRANSLATION_X, 0f, dx);
+            ObjectAnimator yAnimator = ObjectAnimator.ofFloat(particle, View.TRANSLATION_Y, 0f, dy);
+            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_X, 1f, 1.8f, 0.2f);
+            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_Y, 1f, 1.8f, 0.2f);
+            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(particle, View.ALPHA, 1f, 0.8f, 0f);
+            ObjectAnimator rotationAnimator = ObjectAnimator.ofFloat(particle, View.ROTATION, 0f, rotation);
+
+            xAnimator.setDuration(550);
+            yAnimator.setDuration(550);
+            scaleXAnimator.setDuration(550);
+            scaleYAnimator.setDuration(550);
+            alphaAnimator.setDuration(550);
+            rotationAnimator.setDuration(550);
+
+            android.animation.AnimatorSet set = new android.animation.AnimatorSet();
+            set.playTogether(xAnimator, yAnimator, scaleXAnimator, scaleYAnimator, alphaAnimator, rotationAnimator);
+            set.addListener(new android.animation.AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    binding.colorPreview.removeView(particle);
+                }
+            });
+            set.start();
+        }
+    }
+
+    private GradientDrawable createCircleColor(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
+        drawable.setSize(dpToPx(10), dpToPx(10));
+        return drawable;
     }
 
     private void speakCurrentColor() {
