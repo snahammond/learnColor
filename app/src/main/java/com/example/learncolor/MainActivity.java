@@ -156,7 +156,22 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void updatePreview() {
-        binding.colorPreview.setBackgroundColor(currentSelection.getColor());
+        int color = currentSelection.getColor();
+
+        GradientDrawable previewBackground = new GradientDrawable();
+        previewBackground.setShape(GradientDrawable.RECTANGLE);
+        previewBackground.setColor(color);
+        previewBackground.setCornerRadius(dpToPx(32));
+        previewBackground.setStroke(dpToPx(2), Color.argb(120, 255, 255, 255));
+        binding.colorPreview.setBackground(previewBackground);
+
+        GradientDrawable overlayBackground = new GradientDrawable();
+        overlayBackground.setShape(GradientDrawable.RECTANGLE);
+        overlayBackground.setCornerRadius(dpToPx(32));
+        overlayBackground.setColor(Color.argb(40, 255, 255, 255));
+        overlayBackground.setStroke(dpToPx(1), Color.argb(90, 255, 255, 255));
+        binding.glassOverlay.setBackground(overlayBackground);
+
         binding.colorPreview.setClipToOutline(true);
         binding.colorPreview.setOutlineProvider(new android.view.ViewOutlineProvider() {
             @Override
