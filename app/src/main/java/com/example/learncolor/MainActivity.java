@@ -27,13 +27,19 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int REQUEST_SETTINGS = 1001;
+    private static final float TODDLER_SPEECH_RATE = 0.7f;
+    private static final String PREFS_NAME = "learn_color_settings";
+    private static final String PREF_JINGLE = "selected_jingle";
 
     private ActivityMainBinding binding;
     private TextToSpeech textToSpeech;
     private MediaPlayer jinglePlayer;
+    private int selectedJingleResId = SettingsActivity.DEFAULT_JINGLE;
     private ObjectAnimator shimmerAnimator;
     private ObjectAnimator pulseAnimator;
     private ObjectAnimator labelAnimator;
+    private ObjectAnimator previewBounceAnimator;
+    private ObjectAnimator previewRotateAnimator;
     private ValueAnimator previewAnimator;
     private int displayedPreviewColor = Color.RED;
 
@@ -64,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(binding.getRoot());
 
         textToSpeech = new TextToSpeech(this, this);
+        selectedJingleResId = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt(PREF_JINGLE, SettingsActivity.DEFAULT_JINGLE);
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
@@ -77,7 +85,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             textToSpeech.setLanguage(Locale.US);
+            textToSpeech.setSpeechRate(TODDLER_SPEECH_RATE);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        stopJingleLoop();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startJingleLoop();
     }
 
     @Override
@@ -104,7 +125,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK && data != null) {
             int selectedMode = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_MODE, 0);
+            int selectedJingle = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
+            selectedJingleResId = selectedJingle;
+            saveSelectedJingle();
             setMode(selectedMode == 0 ? ColorMode.BASIC : ColorMode.ADVANCED);
+            stopJingleLoop();
+            startJingleLoop();
         }
     }
 
@@ -146,19 +172,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         for (ColorChoice choice : options) {
             Button swatch = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    dpToPx(54), dpToPx(54)
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1f
             );
-            params.setMargins(8, 0, 8, 0);
+            params.setMargins(8, 10, 8, 10);
             swatch.setLayoutParams(params);
-            swatch.setBackgroundColor(choice.getColor());
             swatch.setText("");
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.65f);
+            swatch.setPadding(0, 0, 0, 0);
+            swatch.setAllCaps(false);
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.7f);
             swatch.setOnClickListener(v -> selectColor(choice));
 
             GradientDrawable border = new GradientDrawable();
-            border.setShape(GradientDrawable.OVAL);
+            border.setShape(GradientDrawable.RECTANGLE);
             border.setColor(choice.getColor());
-            border.setStroke(4, choice.equals(currentSelection) ? Color.WHITE : Color.argb(80, 255, 255, 255));
+            border.setCornerRadius(dpToPx(16));
+            border.setStroke(4, choice.equals(currentSelection) ? Color.WHITE : Color.argb(100, 255, 255, 255));
             swatch.setBackground(border);
 
             binding.colorBar.addView(swatch);
@@ -234,25 +264,43 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (shimmerAnimator != null) shimmerAnimator.cancel();
         if (pulseAnimator != null) pulseAnimator.cancel();
         if (labelAnimator != null) labelAnimator.cancel();
+        if (previewBounceAnimator != null) previewBounceAnimator.cancel();
+        if (previewRotateAnimator != null) previewRotateAnimator.cancel();
 
         shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
-        shimmerAnimator.setDuration(2200);
+        shimmerAnimator.setDuration(1800);
         shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         shimmerAnimator.start();
 
         pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.03f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.03f, 1.0f)
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.22f, 0.96f, 1.12f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.22f, 0.96f, 1.12f, 1.0f)
         );
-        pulseAnimator.setDuration(1800);
+        pulseAnimator.setDuration(1000);
         pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-        pulseAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        pulseAnimator.setRepeatMode(ObjectAnimator.RESTART);
         pulseAnimator.start();
 
-        labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -8f, 0f);
-        labelAnimator.setDuration(1400);
+        previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                binding.colorPreview,
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -18f, 18f, -24f, 10f, 0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -26f, 18f, -10f, 0f)
+        );
+        previewBounceAnimator.setDuration(1200);
+        previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        previewBounceAnimator.start();
+
+        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -5f, 6f, -4f, 3f, 0f);
+        previewRotateAnimator.setDuration(1500);
+        previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        previewRotateAnimator.start();
+
+        labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -18f, 12f, -8f, 0f);
+        labelAnimator.setDuration(900);
         labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         labelAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         labelAnimator.start();
@@ -270,6 +318,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (labelAnimator != null) {
             labelAnimator.cancel();
         }
+        if (previewBounceAnimator != null) {
+            previewBounceAnimator.cancel();
+        }
+        if (previewRotateAnimator != null) {
+            previewRotateAnimator.cancel();
+        }
     }
 
     private void startJingleLoop() {
@@ -280,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 jinglePlayer.release();
             }
 
-            jinglePlayer = MediaPlayer.create(this, R.raw.simple_radio_jingle_2);
+            jinglePlayer = MediaPlayer.create(this, selectedJingleResId);
             jinglePlayer.setLooping(true);
             jinglePlayer.setVolume(0.9f, 0.9f);
             jinglePlayer.start();
@@ -299,12 +353,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
+    private void saveSelectedJingle() {
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .putInt(PREF_JINGLE, selectedJingleResId)
+                .apply();
+    }
+
     private void speakCurrentColor() {
         if (textToSpeech == null) {
             Toast.makeText(this, "Speech is not ready yet.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        textToSpeech.setSpeechRate(TODDLER_SPEECH_RATE);
         textToSpeech.speak(currentSelection.getName(), TextToSpeech.QUEUE_FLUSH, null, "learn_color");
     }
 

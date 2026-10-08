@@ -80,6 +80,56 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="Choose a jingle"
+            android:textColor="#6B7280"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/jingleSelectionGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/jingleSimpleRadio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Simple Radio" />
+
+            <RadioButton
+                android:id="@+id/jingleOceanRadio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ocean Frame" />
+
+            <RadioButton
+                android:id="@+id/jingleSoulfulRadio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Soulful Jam" />
+
+            <RadioButton
+                android:id="@+id/jingleSyncRadio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sync Lab" />
+        </RadioGroup>
+    </LinearLayout>
+
     <Button
         android:id="@+id/settingsSaveButton"
         android:layout_width="match_parent"
