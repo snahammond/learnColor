@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Intent intent = new Intent(this, SettingsActivity.class);
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_MODE,
                 currentMode == ColorMode.BASIC ? 0 : 1);
+        intent.putExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
         startActivityForResult(intent, REQUEST_SETTINGS);
     }
 
@@ -273,28 +274,31 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         shimmerAnimator.start();
 
+        binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
+        binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
+
         pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.22f, 0.96f, 1.12f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.22f, 0.96f, 1.12f, 1.0f)
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.72f, 1.12f, 0.9f, 1.18f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.72f, 1.12f, 0.9f, 1.18f, 1.0f)
         );
-        pulseAnimator.setDuration(1000);
+        pulseAnimator.setDuration(1100);
         pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         pulseAnimator.setRepeatMode(ObjectAnimator.RESTART);
         pulseAnimator.start();
 
         previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -18f, 18f, -24f, 10f, 0f),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -26f, 18f, -10f, 0f)
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -10f, 14f, -12f, 8f, 0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -18f, 14f, -10f, 0f)
         );
-        previewBounceAnimator.setDuration(1200);
+        previewBounceAnimator.setDuration(1400);
         previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewBounceAnimator.start();
 
-        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -5f, 6f, -4f, 3f, 0f);
-        previewRotateAnimator.setDuration(1500);
+        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -3f, 4f, -3f, 2f, 0f);
+        previewRotateAnimator.setDuration(1600);
         previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewRotateAnimator.start();

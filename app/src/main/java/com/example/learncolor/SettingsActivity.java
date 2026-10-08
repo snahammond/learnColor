@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 public class SettingsActivity extends AppCompatActivity {
     public static final String EXTRA_SELECTED_MODE = "selected_mode";
     public static final String EXTRA_SELECTED_JINGLE = "selected_jingle";
+    public static final String PREFS_NAME = "learn_color_settings";
+    public static final String PREF_JINGLE = "selected_jingle";
     public static final int DEFAULT_JINGLE = R.raw.simple_radio_jingle_2;
 
     private int selectedMode;
@@ -24,7 +26,8 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         selectedMode = getIntent().getIntExtra(EXTRA_SELECTED_MODE, 0);
-        selectedJingle = getIntent().getIntExtra(EXTRA_SELECTED_JINGLE, DEFAULT_JINGLE);
+        selectedJingle = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt(PREF_JINGLE, getIntent().getIntExtra(EXTRA_SELECTED_JINGLE, DEFAULT_JINGLE));
 
         Button backButton = findViewById(R.id.settingsBackButton);
         Button basicButton = findViewById(R.id.settingsBasicButton);
@@ -56,6 +59,11 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         saveButton.setOnClickListener(v -> {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .putInt(PREF_JINGLE, selectedJingle)
+                    .apply();
+
             Intent result = new Intent();
             result.putExtra(EXTRA_SELECTED_MODE, selectedMode);
             result.putExtra(EXTRA_SELECTED_JINGLE, selectedJingle);
