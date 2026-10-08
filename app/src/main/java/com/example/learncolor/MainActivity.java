@@ -1,8 +1,12 @@
 package com.example.learncolor;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,29 +25,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private final List<ColorChoice> basicColors = new ArrayList<>(Arrays.asList(
             new ColorChoice("Red", Color.RED),
-            new ColorChoice("Blue", Color.BLUE),
             new ColorChoice("Yellow", Color.YELLOW),
             new ColorChoice("Green", Color.GREEN),
-            new ColorChoice("Orange", Color.rgb(255, 153, 0)),
-            new ColorChoice("Purple", Color.rgb(128, 0, 255)),
-            new ColorChoice("Pink", Color.rgb(255, 105, 180)),
-            new ColorChoice("Brown", Color.rgb(139, 69, 19)),
-            new ColorChoice("Black", Color.BLACK),
-            new ColorChoice("White", Color.WHITE),
-            new ColorChoice("Gray", Color.GRAY)
+            new ColorChoice("Blue", Color.BLUE)
     ));
 
     private final List<ColorChoice> advancedColors = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Teal", Color.rgb(0, 128, 128)),
-            new ColorChoice("Cyan", Color.CYAN),
-            new ColorChoice("Magenta", Color.MAGENTA),
-            new ColorChoice("Navy", Color.rgb(0, 0, 128)),
-            new ColorChoice("Maroon", Color.rgb(128, 0, 0)),
-            new ColorChoice("Olive", Color.rgb(128, 128, 0)),
-            new ColorChoice("Gold", Color.rgb(255, 215, 0)),
-            new ColorChoice("Silver", Color.rgb(192, 192, 192)),
-            new ColorChoice("Lavender", Color.rgb(181, 126, 220)),
-            new ColorChoice("Beige", Color.rgb(245, 245, 220))
+            new ColorChoice("Red", Color.RED),
+            new ColorChoice("Orange", Color.rgb(255, 153, 0)),
+            new ColorChoice("Yellow", Color.YELLOW),
+            new ColorChoice("Green", Color.GREEN),
+            new ColorChoice("Blue", Color.BLUE),
+            new ColorChoice("Purple", Color.rgb(128, 0, 255)),
+            new ColorChoice("Pink", Color.rgb(255, 105, 180))
     ));
 
     private ColorMode currentMode = ColorMode.BASIC;
@@ -57,11 +51,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         textToSpeech = new TextToSpeech(this, this);
 
-        binding.basicModeButton.setOnClickListener(view -> setMode(ColorMode.BASIC));
-        binding.advancedModeButton.setOnClickListener(view -> setMode(ColorMode.ADVANCED));
-        binding.speakButton.setOnClickListener(view -> speakCurrentColor());
-
-        binding.colorWheel.setOnColorSelectedListener(color -> updateSelectionFromColor(color));
+        binding.modeMenuButton.setOnClickListener(v -> toggleModeMenu());
+        binding.basicModeButton.setOnClickListener(v -> {
+            setMode(ColorMode.BASIC);
+            binding.modeOptions.setVisibility(View.GONE);
+        });
+        binding.advancedModeButton.setOnClickListener(v -> {
+            setMode(ColorMode.ADVANCED);
+            binding.modeOptions.setVisibility(View.GONE);
+        });
+        binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
 
         setMode(ColorMode.BASIC);
     }
@@ -82,17 +81,57 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onDestroy();
     }
 
+    private void toggleModeMenu() {
+        if (binding.modeOptions.getVisibility() == View.VISIBLE) {
+            binding.modeOptions.setVisibility(View.GONE);
+        } else {
+            binding.modeOptions.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void setMode(ColorMode mode) {
         currentMode = mode;
 
         List<ColorChoice> options = (mode == ColorMode.BASIC) ? basicColors : advancedColors;
         currentSelection = options.get(0);
+        updateColorStrip();
+        updatePreview();
+    }
 
-        binding.basicModeButton.setSelected(mode == ColorMode.BASIC);
-        binding.advancedModeButton.setSelected(mode == ColorMode.ADVANCED);
+    private void updateColorStrip() {
+        binding.colorBar.removeAllViews();
+        List<ColorChoice> options = (currentMode == ColorMode.BASIC) ? basicColors : advancedColors;
 
-        binding.colorWheel.setSelectedColor(currentSelection.getColor());
-        updateSelectionFromColor(currentSelection.getColor());
+        for (ColorChoice choice : options) {
+            Button swatch = new Button(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    dpToPx(54), dpToPx(54)
+            );
+            params.setMargins(8, 0, 8, 0);
+            swatch.setLayoutParams(params);
+            swatch.setBackgroundColor(choice.getColor());
+            swatch.setText("");
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.65f);
+            swatch.setOnClickListener(v -> selectColor(choice));
+
+            GradientDrawable border = new GradientDrawable();
+            border.setShape(GradientDrawable.OVAL);
+            border.setColor(choice.getColor());
+            border.setStroke(4, choice.equals(currentSelection) ? Color.WHITE : Color.argb(80, 255, 255, 255));
+            swatch.setBackground(border);
+
+            binding.colorBar.addView(swatch);
+        }
+    }
+
+    private void selectColor(ColorChoice choice) {
+        currentSelection = choice;
+        updateColorStrip();
+        updatePreview();
+    }
+
+    private void updatePreview() {
+        binding.colorPreview.setBackgroundColor(currentSelection.getColor());
     }
 
     private void speakCurrentColor() {
@@ -101,40 +140,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             return;
         }
 
-        String phrase = "The color is " + currentSelection.getName().toLowerCase(Locale.US);
-        textToSpeech.speak(phrase, TextToSpeech.QUEUE_FLUSH, null, "learn_color");
+        textToSpeech.speak(currentSelection.getName(), TextToSpeech.QUEUE_FLUSH, null, "learn_color");
     }
 
-    private void updateSelectionFromColor(int color) {
-        List<ColorChoice> options = (currentMode == ColorMode.BASIC) ? basicColors : advancedColors;
-        currentSelection = findClosestColor(color, options);
-
-        binding.colorPreview.setBackgroundColor(currentSelection.getColor());
-        binding.speakButton.setText(currentSelection.getName());
-        binding.colorLabel.setText(currentSelection.getName());
-        binding.colorWheel.setSelectedColor(currentSelection.getColor());
-    }
-
-    private ColorChoice findClosestColor(int targetColor, List<ColorChoice> options) {
-        int targetRed = Color.red(targetColor);
-        int targetGreen = Color.green(targetColor);
-        int targetBlue = Color.blue(targetColor);
-
-        ColorChoice closest = options.get(0);
-        int bestDistance = Integer.MAX_VALUE;
-
-        for (ColorChoice choice : options) {
-            int redDiff = targetRed - Color.red(choice.getColor());
-            int greenDiff = targetGreen - Color.green(choice.getColor());
-            int blueDiff = targetBlue - Color.blue(choice.getColor());
-            int distance = redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff;
-
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                closest = choice;
-            }
-        }
-
-        return closest;
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }
