@@ -28,7 +28,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int REQUEST_SETTINGS = 1001;
-    private static final float TODDLER_SPEECH_RATE = 0.7f;
+    private static final float TODDLER_SPEECH_RATE = 0.5f;
+    private static final int PARTY_POPPER_DURATION_MS = 1200;
     private static final String PREFS_NAME = "learn_color_settings";
     private static final String PREF_JINGLE = "selected_jingle";
     private static final String PREF_BOUNCE_SPEED = "selected_bounce_speed";
@@ -408,12 +409,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Color.parseColor("#4DD0E1")
         };
 
-        for (int i = 0; i < 12; i++) {
+        int previewWidth = binding.colorPreview.getWidth();
+        int previewHeight = binding.colorPreview.getHeight();
+        int centerX = previewWidth / 2;
+        int centerY = previewHeight / 2;
+
+        for (int i = 0; i < 18; i++) {
             final View particle = new View(this);
-            int size = dpToPx(10 + (i % 4) * 3);
+            int size = dpToPx(16 + (i % 5) * 4);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
-            int centerX = binding.colorPreview.getWidth() / 2;
-            int centerY = binding.colorPreview.getHeight() / 2;
             params.leftMargin = centerX - size / 2;
             params.topMargin = centerY - size / 2;
             particle.setLayoutParams(params);
@@ -421,23 +425,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             particle.setAlpha(1f);
             binding.colorPreview.addView(particle);
 
-            float dx = (float) ((Math.random() * 220f) - 110f);
-            float dy = (float) ((Math.random() * 220f) - 110f) - 30f;
+            float dx = (float) ((Math.random() * 340f) - 170f);
+            float dy = (float) ((Math.random() * 340f) - 170f) - 10f;
             float rotation = (float) ((Math.random() * 360f) - 180f);
 
             ObjectAnimator xAnimator = ObjectAnimator.ofFloat(particle, View.TRANSLATION_X, 0f, dx);
             ObjectAnimator yAnimator = ObjectAnimator.ofFloat(particle, View.TRANSLATION_Y, 0f, dy);
-            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_X, 1f, 1.8f, 0.2f);
-            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_Y, 1f, 1.8f, 0.2f);
-            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(particle, View.ALPHA, 1f, 0.8f, 0f);
+            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_X, 0.5f, 1.8f, 0.35f);
+            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(particle, View.SCALE_Y, 0.5f, 1.8f, 0.35f);
+            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(particle, View.ALPHA, 1f, 0.8f, 0.2f, 0f);
             ObjectAnimator rotationAnimator = ObjectAnimator.ofFloat(particle, View.ROTATION, 0f, rotation);
 
-            xAnimator.setDuration(550);
-            yAnimator.setDuration(550);
-            scaleXAnimator.setDuration(550);
-            scaleYAnimator.setDuration(550);
-            alphaAnimator.setDuration(550);
-            rotationAnimator.setDuration(550);
+            xAnimator.setDuration(PARTY_POPPER_DURATION_MS);
+            yAnimator.setDuration(PARTY_POPPER_DURATION_MS);
+            scaleXAnimator.setDuration(PARTY_POPPER_DURATION_MS);
+            scaleYAnimator.setDuration(PARTY_POPPER_DURATION_MS);
+            alphaAnimator.setDuration(PARTY_POPPER_DURATION_MS);
+            rotationAnimator.setDuration(PARTY_POPPER_DURATION_MS);
 
             android.animation.AnimatorSet set = new android.animation.AnimatorSet();
             set.playTogether(xAnimator, yAnimator, scaleXAnimator, scaleYAnimator, alphaAnimator, rotationAnimator);
