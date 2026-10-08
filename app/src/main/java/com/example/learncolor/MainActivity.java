@@ -7,8 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private ActivityMainBinding binding;
     private TextToSpeech textToSpeech;
-    private ToneGenerator toneGenerator;
+    private MediaPlayer jinglePlayer;
     private ObjectAnimator shimmerAnimator;
     private ObjectAnimator pulseAnimator;
     private ObjectAnimator labelAnimator;
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(binding.getRoot());
 
         textToSpeech = new TextToSpeech(this, this);
-        toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 70);
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
@@ -84,9 +82,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     protected void onDestroy() {
-        if (toneGenerator != null) {
-            toneGenerator.release();
-        }
+        stopJingleLoop();
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -179,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         int targetColor = currentSelection.getColor();
         animatePreviewToColor(targetColor);
         binding.colorLabel.setText(currentSelection.getName());
-        playSelectionTone();
     }
 
     private void animatePreviewToColor(int targetColor) {
@@ -261,6 +256,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         labelAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         labelAnimator.start();
+
+        startJingleLoop();
     }
 
     private void stopLivingPreviewAnimation() {
@@ -275,12 +272,31 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
-    private void playSelectionTone() {
-        if (toneGenerator == null) {
-            return;
-        }
+    private void startJingleLoop() {
+        stopJingleLoop();
 
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 150);
+        try {
+            if (jinglePlayer != null) {
+                jinglePlayer.release();
+            }
+
+            jinglePlayer = MediaPlayer.create(this, R.raw.simple_radio_jingle_2);
+            jinglePlayer.setLooping(true);
+            jinglePlayer.setVolume(0.9f, 0.9f);
+            jinglePlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopJingleLoop() {
+        if (jinglePlayer != null) {
+            if (jinglePlayer.isPlaying()) {
+                jinglePlayer.stop();
+            }
+            jinglePlayer.release();
+            jinglePlayer = null;
+        }
     }
 
     private void speakCurrentColor() {
