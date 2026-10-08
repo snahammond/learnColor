@@ -1,5 +1,6 @@
 package com.example.learncolor;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+    private static final int REQUEST_SETTINGS = 1001;
+
     private ActivityMainBinding binding;
     private TextToSpeech textToSpeech;
 
@@ -51,15 +54,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         textToSpeech = new TextToSpeech(this, this);
 
-        binding.modeMenuButton.setOnClickListener(v -> toggleModeMenu());
-        binding.basicModeButton.setOnClickListener(v -> {
-            setMode(ColorMode.BASIC);
-            binding.modeOptions.setVisibility(View.GONE);
-        });
-        binding.advancedModeButton.setOnClickListener(v -> {
-            setMode(ColorMode.ADVANCED);
-            binding.modeOptions.setVisibility(View.GONE);
-        });
+        binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> speakCurrentColor());
 
         setMode(ColorMode.BASIC);
@@ -82,11 +77,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onDestroy();
     }
 
-    private void toggleModeMenu() {
-        binding.modeOptions.setVisibility(
-                binding.modeOptions.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
-        );
-        updateModeControls();
+    private void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.putExtra(SettingsActivity.EXTRA_SELECTED_MODE,
+                currentMode == ColorMode.BASIC ? 0 : 1);
+        startActivityForResult(intent, REQUEST_SETTINGS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK && data != null) {
+            int selectedMode = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_MODE, 0);
+            setMode(selectedMode == 0 ? ColorMode.BASIC : ColorMode.ADVANCED);
+        }
     }
 
     private void setMode(ColorMode mode) {
@@ -116,11 +121,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.basicModeButton.setTextColor(basicSelected ? Color.WHITE : Color.BLACK);
         binding.advancedModeButton.setTextColor(basicSelected ? Color.BLACK : Color.WHITE);
 
-        binding.modeMenuButton.setBackgroundTintList(
-                android.content.res.ColorStateList.valueOf(
-                        basicSelected ? Color.parseColor("#1A1A1A") : Color.parseColor("#6200EE")
-                )
-        );
+        binding.modeMenuButton.setBackgroundResource(android.R.color.transparent);
+        binding.modeMenuButton.setTextColor(Color.parseColor("#1F2937"));
     }
 
     private void updateColorStrip() {
@@ -165,10 +167,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         previewBackground.setStroke(dpToPx(2), Color.argb(120, 255, 255, 255));
         binding.colorPreview.setBackground(previewBackground);
 
-        GradientDrawable overlayBackground = new GradientDrawable();
+        GradientDrawable overlayBackground = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[] {
+                        Color.argb(140, 255, 255, 255),
+                        Color.argb(35, 255, 255, 255),
+                        Color.argb(110, 255, 255, 255)
+                }
+        );
         overlayBackground.setShape(GradientDrawable.RECTANGLE);
         overlayBackground.setCornerRadius(dpToPx(32));
-        overlayBackground.setColor(Color.argb(40, 255, 255, 255));
         overlayBackground.setStroke(dpToPx(1), Color.argb(90, 255, 255, 255));
         binding.glassOverlay.setBackground(overlayBackground);
 
