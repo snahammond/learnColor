@@ -83,11 +83,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void toggleModeMenu() {
-        if (binding.modeOptions.getVisibility() == View.VISIBLE) {
-            binding.modeOptions.setVisibility(View.GONE);
-        } else {
-            binding.modeOptions.setVisibility(View.VISIBLE);
-        }
+        binding.modeOptions.setVisibility(
+                binding.modeOptions.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
+        );
+        updateModeControls();
     }
 
     private void setMode(ColorMode mode) {
@@ -101,27 +100,25 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void updateModeControls() {
+        boolean basicSelected = currentMode == ColorMode.BASIC;
+
         binding.basicModeButton.setBackgroundTintList(
                 android.content.res.ColorStateList.valueOf(
-                        currentMode == ColorMode.BASIC ? Color.parseColor("#6200EE") : Color.parseColor("#E0E0E0")
+                        basicSelected ? Color.parseColor("#6200EE") : Color.parseColor("#E0E0E0")
                 )
         );
         binding.advancedModeButton.setBackgroundTintList(
                 android.content.res.ColorStateList.valueOf(
-                        currentMode == ColorMode.ADVANCED ? Color.parseColor("#6200EE") : Color.parseColor("#E0E0E0")
+                        basicSelected ? Color.parseColor("#E0E0E0") : Color.parseColor("#6200EE")
                 )
         );
 
-        binding.basicModeButton.setTextColor(
-                currentMode == ColorMode.BASIC ? Color.WHITE : Color.BLACK
-        );
-        binding.advancedModeButton.setTextColor(
-                currentMode == ColorMode.ADVANCED ? Color.WHITE : Color.BLACK
-        );
+        binding.basicModeButton.setTextColor(basicSelected ? Color.WHITE : Color.BLACK);
+        binding.advancedModeButton.setTextColor(basicSelected ? Color.BLACK : Color.WHITE);
 
         binding.modeMenuButton.setBackgroundTintList(
                 android.content.res.ColorStateList.valueOf(
-                        currentMode == ColorMode.BASIC ? Color.parseColor("#1A1A1A") : Color.parseColor("#6200EE")
+                        basicSelected ? Color.parseColor("#1A1A1A") : Color.parseColor("#6200EE")
                 )
         );
     }
@@ -160,6 +157,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void updatePreview() {
         binding.colorPreview.setBackgroundColor(currentSelection.getColor());
+        binding.colorPreview.setClipToOutline(true);
+        binding.colorPreview.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, android.graphics.Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpToPx(32));
+            }
+        });
+        binding.colorLabel.setText(currentSelection.getName());
     }
 
     private void speakCurrentColor() {
