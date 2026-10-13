@@ -245,38 +245,36 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void updateColorStrip() {
         binding.colorBar.removeAllViews();
         List<ColorChoice> options = getCurrentOptions();
-        int swatchHeight = currentTopic == LearningType.NUMBERS ? dpToPx(58) : dpToPx(42);
+        int swatchHeight = dpToPx(42);
+        int cornerRadius = dpToPx(10);
 
-        for (int index = 0; index < options.size(); index++) {
-            ColorChoice choice = options.get(index);
+        for (ColorChoice choice : options) {
             Button swatch = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0,
                     swatchHeight,
                     1f
             );
-            params.setMargins(4, 4, 4, 4);
+            params.setMargins(3, 3, 3, 3);
             swatch.setLayoutParams(params);
             swatch.setPadding(0, 0, 0, 0);
             swatch.setAllCaps(false);
             swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.92f);
             swatch.setOnClickListener(v -> selectColor(choice));
 
+            GradientDrawable border = new GradientDrawable();
+            border.setShape(GradientDrawable.RECTANGLE);
+            border.setColor(choice.getColor());
+            border.setCornerRadius(cornerRadius);
+            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(110, 255, 255, 255));
+            swatch.setBackground(border);
+
             if (currentTopic == LearningType.NUMBERS) {
-                swatch.setBackground(createNumberTile(choice.getColor(), choice.equals(currentSelection), index));
                 swatch.setText(choice.getName());
-                swatch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f);
+                swatch.setTextSize(18);
                 swatch.setTextColor(isDarkColor(choice.getColor()) ? Color.WHITE : Color.BLACK);
                 swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-                swatch.setRotation(index % 2 == 0 ? -3f : 3f);
-                swatch.setTranslationY(index % 2 == 0 ? 2f : -2f);
             } else {
-                GradientDrawable border = new GradientDrawable();
-                border.setShape(GradientDrawable.RECTANGLE);
-                border.setColor(choice.getColor());
-                border.setCornerRadius(dpToPx(10));
-                border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(110, 255, 255, 255));
-                swatch.setBackground(border);
                 swatch.setText("");
             }
 
@@ -297,14 +295,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setTextColor(targetColor);
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 78f);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 170f);
+            binding.colorLabel.setGravity(android.view.Gravity.CENTER);
+            binding.colorLabel.setBackground(null);
+            binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            binding.colorLabel.setAlpha(1f);
             animatePreviewToColor(targetColor);
             return;
         }
 
         binding.colorLabel.setTextColor(Color.WHITE);
         binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
+        binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
+        binding.colorLabel.setPadding(dpToPx(22), dpToPx(12), dpToPx(22), dpToPx(12));
         animatePreviewToColor(targetColor);
     }
 
@@ -337,57 +341,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void applyPreviewColor(int color) {
         GradientDrawable previewBackground = new GradientDrawable();
         previewBackground.setShape(GradientDrawable.RECTANGLE);
-        previewBackground.setCornerRadii(new float[] {
-                dpToPx(26), dpToPx(18),
-                dpToPx(28), dpToPx(18),
-                dpToPx(24), dpToPx(18),
-                dpToPx(26), dpToPx(16)
-        });
-
-        if (currentTopic == LearningType.NUMBERS) {
-            int red = Color.red(currentSelection.getColor());
-            int green = Color.green(currentSelection.getColor());
-            int blue = Color.blue(currentSelection.getColor());
-            previewBackground.setColor(Color.argb(255, 255, 250, 248));
-            previewBackground.setStroke(dpToPx(4), Color.argb(90, red, green, blue));
-            binding.colorLabel.setShadowLayer(12f, 0f, 6f, Color.argb(80, red, green, blue));
-        } else {
-            previewBackground.setColor(color);
-            previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
-            binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
-        }
-
+        previewBackground.setColor(color);
+        previewBackground.setCornerRadius(dpToPx(32));
+        previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
         binding.colorPreview.setBackground(previewBackground);
-
-        int[] overlayColors;
-        if (currentTopic == LearningType.NUMBERS) {
-            int red = Color.red(currentSelection.getColor());
-            int green = Color.green(currentSelection.getColor());
-            int blue = Color.blue(currentSelection.getColor());
-            overlayColors = new int[] {
-                    Color.argb(40, red, green, blue),
-                    Color.argb(18, red, green, blue),
-                    Color.argb(30, red, green, blue)
-            };
-        } else {
-            overlayColors = new int[] {
-                    Color.argb(140, 255, 255, 255),
-                    Color.argb(35, 255, 255, 255),
-                    Color.argb(110, 255, 255, 255)
-            };
-        }
 
         GradientDrawable overlayBackground = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                overlayColors
+                new int[] {
+                        Color.argb(140, 255, 255, 255),
+                        Color.argb(35, 255, 255, 255),
+                        Color.argb(110, 255, 255, 255)
+                }
         );
         overlayBackground.setShape(GradientDrawable.RECTANGLE);
-        overlayBackground.setCornerRadii(new float[] {
-                dpToPx(26), dpToPx(18),
-                dpToPx(28), dpToPx(18),
-                dpToPx(24), dpToPx(18),
-                dpToPx(26), dpToPx(16)
-        });
+        overlayBackground.setCornerRadius(dpToPx(32));
         overlayBackground.setStroke(dpToPx(1), Color.argb(90, 255, 255, 255));
         binding.glassOverlay.setBackground(overlayBackground);
 
@@ -398,25 +366,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpToPx(32));
             }
         });
-    }
-
-    private GradientDrawable createNumberTile(int color, boolean selected, int index) {
-        GradientDrawable tile = new GradientDrawable();
-        tile.setShape(GradientDrawable.RECTANGLE);
-        tile.setColor(color);
-        tile.setStroke(dpToPx(selected ? 3 : 2), selected ? Color.WHITE : Color.argb(120, 255, 255, 255));
-        tile.setCornerRadii(new float[] {
-                dpToPx(22), dpToPx(18),
-                dpToPx(28), dpToPx(20),
-                dpToPx(26), dpToPx(18),
-                dpToPx(18), dpToPx(22)
-        });
-
-        if (selected) {
-            tile.setAlpha(255);
-        }
-
-        return tile;
     }
 
     private int blendWithWhite(int baseColor, float amount) {
