@@ -12,6 +12,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -289,9 +290,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void updatePreview() {
-        int targetColor = currentSelection.getColor();
-        animatePreviewToColor(targetColor);
+        final int targetColor = currentSelection.getColor();
         binding.colorLabel.setText(currentSelection.getName());
+
+        if (currentTopic == LearningType.NUMBERS) {
+            binding.colorLabel.setTextColor(targetColor);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 78f);
+            binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            animatePreviewToColor(targetColor);
+            return;
+        }
+
+        binding.colorLabel.setTextColor(Color.WHITE);
+        binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
+        animatePreviewToColor(targetColor);
     }
 
     private void animatePreviewToColor(int targetColor) {
@@ -300,18 +312,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         final int startColor = displayedPreviewColor;
+        final int effectiveStart = currentTopic == LearningType.NUMBERS ? blendWithWhite(startColor, 0.18f) : startColor;
+        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? blendWithWhite(targetColor, 0.18f) : targetColor;
+
         previewAnimator = ValueAnimator.ofFloat(0f, 1f);
         previewAnimator.setDuration(550);
         previewAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator());
         previewAnimator.addUpdateListener(animation -> {
             float fraction = (float) animation.getAnimatedValue();
-            int blendedColor = (Integer) new ArgbEvaluator().evaluate(fraction, startColor, targetColor);
+            int blendedColor = (Integer) new ArgbEvaluator().evaluate(fraction, effectiveStart, effectiveTarget);
             applyPreviewColor(blendedColor);
         });
         previewAnimator.addListener(new android.animation.AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(android.animation.Animator animation) {
-                displayedPreviewColor = targetColor;
+                displayedPreviewColor = effectiveTarget;
             }
         });
         previewAnimator.start();
@@ -320,18 +335,39 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void applyPreviewColor(int color) {
         GradientDrawable previewBackground = new GradientDrawable();
         previewBackground.setShape(GradientDrawable.RECTANGLE);
-        previewBackground.setColor(color);
         previewBackground.setCornerRadius(dpToPx(32));
-        previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
+
+        if (currentTopic == LearningType.NUMBERS) {
+            previewBackground.setColor(Color.argb(255, 255, 250, 248));
+            previewBackground.setStroke(dpToPx(3), currentSelection.getColor());
+        } else {
+            previewBackground.setColor(color);
+            previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
+        }
+
         binding.colorPreview.setBackground(previewBackground);
+
+        int[] overlayColors;
+        if (currentTopic == LearningType.NUMBERS) {
+            int red = Color.red(currentSelection.getColor());
+            int green = Color.green(currentSelection.getColor());
+            int blue = Color.blue(currentSelection.getColor());
+            overlayColors = new int[] {
+                    Color.argb(38, red, green, blue),
+                    Color.argb(12, red, green, blue),
+                    Color.argb(28, red, green, blue)
+            };
+        } else {
+            overlayColors = new int[] {
+                    Color.argb(140, 255, 255, 255),
+                    Color.argb(35, 255, 255, 255),
+                    Color.argb(110, 255, 255, 255)
+            };
+        }
 
         GradientDrawable overlayBackground = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {
-                        Color.argb(140, 255, 255, 255),
-                        Color.argb(35, 255, 255, 255),
-                        Color.argb(110, 255, 255, 255)
-                }
+                overlayColors
         );
         overlayBackground.setShape(GradientDrawable.RECTANGLE);
         overlayBackground.setCornerRadius(dpToPx(32));
@@ -345,6 +381,22 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpToPx(32));
             }
         });
+    }
+
+    private int blendWithWhite(int baseColor, float amount) {
+        int red = Color.red(baseColor);
+        int green = Color.green(baseColor);
+        int blue = Color.blue(baseColor);
+
+        int whiteRed = 255;
+        int whiteGreen = 255;
+        int whiteBlue = 255;
+
+        int blendedRed = (int) (red * (1f - amount) + whiteRed * amount);
+        int blendedGreen = (int) (green * (1f - amount) + whiteGreen * amount);
+        int blendedBlue = (int) (blue * (1f - amount) + whiteBlue * amount);
+
+        return Color.rgb(blendedRed, blendedGreen, blendedBlue);
     }
 
     private void startLivingPreviewAnimation() {

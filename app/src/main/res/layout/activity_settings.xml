@@ -1,212 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF9F4"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/settingsBackButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:color/transparent"
-            android:text="←"
-            android:textColor="#1F2937"
-            android:textSize="28sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Settings"
-            android:textColor="#1F2937"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
         android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="Choose what to learn"
-            android:textColor="#6B7280"
-            android:textSize="14sp" />
+        android:padding="20dp"
+        android:paddingBottom="32dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <Button
-                android:id="@+id/settingsColorsButton"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#7C3AED"
-                android:text="Colors"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/settingsNumbersButton"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#E7E7E7"
-                android:text="Numbers"
-                android:textColor="#1C1C1C" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="Choose a level"
-            android:textColor="#6B7280"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/settingsBasicButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#7C3AED"
-                android:text="Basic"
-                android:textColor="#FFFFFF" />
+                android:id="@+id/settingsBackButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                android:text="←"
+                android:textColor="#1F2937"
+                android:textSize="28sp" />
 
-            <Button
-                android:id="@+id/settingsAdvancedButton"
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#E7E7E7"
-                android:text="Advanced"
-                android:textColor="#1C1C1C" />
+                android:gravity="center"
+                android:text="Settings"
+                android:textColor="#1F2937"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
         </LinearLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="Choose a jingle"
-            android:textColor="#6B7280"
-            android:textSize="14sp" />
-
-        <RadioGroup
-            android:id="@+id/jingleSelectionGroup"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <RadioButton
-                android:id="@+id/jingleSimpleRadio"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Choose what to learn"
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Simple Radio" />
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/jingleOceanRadio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ocean Frame" />
+                <Button
+                    android:id="@+id/settingsColorsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7C3AED"
+                    android:text="Colors"
+                    android:textColor="#FFFFFF" />
 
-            <RadioButton
-                android:id="@+id/jingleSoulfulRadio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Soulful Jam" />
+                <Button
+                    android:id="@+id/settingsNumbersButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#E7E7E7"
+                    android:text="Numbers"
+                    android:textColor="#1C1C1C" />
+            </LinearLayout>
+        </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/jingleSyncRadio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sync Lab" />
-        </RadioGroup>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bounce speed"
-            android:textColor="#6B7280"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/bounceSpeedValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Speed: 5/10"
-            android:textColor="#1F2937"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <SeekBar
-            android:id="@+id/bounceSpeedSlider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="9"
-            android:min="0"
-            android:progress="4" />
-    </LinearLayout>
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <Button
-        android:id="@+id/settingsSaveButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#1F2937"
-        android:text="Save"
-        android:textColor="#FFFFFF" />
-</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Choose a level"
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/settingsBasicButton"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7C3AED"
+                    android:text="Basic"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/settingsAdvancedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#E7E7E7"
+                    android:text="Advanced"
+                    android:textColor="#1C1C1C" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Choose a jingle"
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
+
+            <RadioGroup
+                android:id="@+id/jingleSelectionGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/jingleSimpleRadio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Simple Radio" />
+
+                <RadioButton
+                    android:id="@+id/jingleOceanRadio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ocean Frame" />
+
+                <RadioButton
+                    android:id="@+id/jingleSoulfulRadio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Soulful Jam" />
+
+                <RadioButton
+                    android:id="@+id/jingleSyncRadio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sync Lab" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bounce speed"
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/bounceSpeedValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Speed: 5/10"
+                android:textColor="#1F2937"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <SeekBar
+                android:id="@+id/bounceSpeedSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="9"
+                android:min="0"
+                android:progress="4" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/settingsSaveButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#1F2937"
+            android:text="Save"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</ScrollView>
