@@ -209,8 +209,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void updateColorStrip() {
         binding.colorBar.removeAllViews();
         List<ColorChoice> options = (currentMode == ColorMode.BASIC) ? basicColors : advancedColors;
-        int swatchHeight = dpToPx(46);
-        int cornerRadius = dpToPx(11);
+        int swatchHeight = dpToPx(42);
+        int cornerRadius = dpToPx(10);
 
         for (ColorChoice choice : options) {
             Button swatch = new Button(this);
@@ -219,19 +219,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     swatchHeight,
                     1f
             );
-            params.setMargins(2, 2, 2, 2);
+            params.setMargins(3, 3, 3, 3);
             swatch.setLayoutParams(params);
             swatch.setText("");
             swatch.setPadding(0, 0, 0, 0);
             swatch.setAllCaps(false);
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.82f);
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.92f);
             swatch.setOnClickListener(v -> selectColor(choice));
 
             GradientDrawable border = new GradientDrawable();
             border.setShape(GradientDrawable.RECTANGLE);
             border.setColor(choice.getColor());
             border.setCornerRadius(cornerRadius);
-            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(120, 255, 255, 255));
+            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(110, 255, 255, 255));
             swatch.setBackground(border);
 
             binding.colorBar.addView(swatch);

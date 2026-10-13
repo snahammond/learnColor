@@ -20,24 +20,25 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:elevation="2dp"
+            android:background="#F5EEE7"
+            android:elevation="1dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp">
+            android:padding="6dp"
+            android:clipToPadding="false"
+            android:backgroundTint="#F3E9E0"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp">
 
             <LinearLayout
                 android:id="@+id/colorBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#F8EFE8"
+                android:background="#F7F0EA"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="6dp"
-                android:clipToPadding="false"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp" />
+                android:padding="0dp"
+                android:clipToPadding="false" />
         </LinearLayout>
 
         <Button
