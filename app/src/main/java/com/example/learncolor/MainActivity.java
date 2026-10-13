@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private static final String PREFS_NAME = "learn_color_settings";
     private static final String PREF_JINGLE = "selected_jingle";
     private static final String PREF_BOUNCE_SPEED = "selected_bounce_speed";
+    private static final String PREF_TOPIC = "selected_learning_topic";
     private static final int DEFAULT_BOUNCE_SPEED = 5;
 
     private ActivityMainBinding binding;
@@ -69,7 +70,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             new ColorChoice("Pink", Color.rgb(255, 105, 180))
     ));
 
+    private final List<ColorChoice> basicNumbers = new ArrayList<>(Arrays.asList(
+            new ColorChoice("1", Color.rgb(255, 120, 120)),
+            new ColorChoice("2", Color.rgb(255, 190, 120)),
+            new ColorChoice("3", Color.rgb(120, 200, 120)),
+            new ColorChoice("4", Color.rgb(120, 170, 255)),
+            new ColorChoice("5", Color.rgb(180, 120, 255))
+    ));
+
+    private final List<ColorChoice> advancedNumbers = new ArrayList<>(Arrays.asList(
+            new ColorChoice("1", Color.rgb(255, 120, 120)),
+            new ColorChoice("2", Color.rgb(255, 170, 95)),
+            new ColorChoice("3", Color.rgb(255, 210, 93)),
+            new ColorChoice("4", Color.rgb(120, 200, 120)),
+            new ColorChoice("5", Color.rgb(120, 170, 255)),
+            new ColorChoice("6", Color.rgb(130, 120, 255)),
+            new ColorChoice("7", Color.rgb(215, 120, 180)),
+            new ColorChoice("8", Color.rgb(255, 140, 180)),
+            new ColorChoice("9", Color.rgb(126, 205, 202)),
+            new ColorChoice("10", Color.rgb(180, 120, 95))
+    ));
+
     private ColorMode currentMode = ColorMode.BASIC;
+    private LearningType currentTopic = LearningType.COLORS;
     private ColorChoice currentSelection = basicColors.get(0);
 
     @Override
@@ -83,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .getInt(PREF_JINGLE, SettingsActivity.DEFAULT_JINGLE);
         bounceSpeed = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getInt(PREF_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED);
+        currentTopic = LearningType.values()[getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt(PREF_TOPIC, LearningType.COLORS.ordinal())];
 
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> {
@@ -151,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Intent intent = new Intent(this, SettingsActivity.class);
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_MODE,
                 currentMode == ColorMode.BASIC ? 0 : 1);
+        intent.putExtra(SettingsActivity.EXTRA_SELECTED_TOPIC, currentTopic.ordinal());
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
         intent.putExtra(SettingsActivity.EXTRA_BOUNCE_SPEED, bounceSpeed);
         startActivityForResult(intent, REQUEST_SETTINGS);
@@ -162,12 +188,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK && data != null) {
             int selectedMode = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_MODE, 0);
+            int selectedTopic = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_TOPIC, currentTopic.ordinal());
             int selectedJingle = data.getIntExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
             int selectedBounceSpeed = data.getIntExtra(SettingsActivity.EXTRA_BOUNCE_SPEED, bounceSpeed);
             selectedJingleResId = selectedJingle;
             bounceSpeed = selectedBounceSpeed;
+            currentTopic = LearningType.values()[Math.max(0, Math.min(LearningType.values().length - 1, selectedTopic))];
             saveSelectedJingle();
             saveBounceSpeed();
+            saveSelectedTopic();
             setMode(selectedMode == 0 ? ColorMode.BASIC : ColorMode.ADVANCED);
             stopJingleLoop();
             startJingleLoop();
@@ -177,12 +206,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void setMode(ColorMode mode) {
         currentMode = mode;
-
-        List<ColorChoice> options = (mode == ColorMode.BASIC) ? basicColors : advancedColors;
+        List<ColorChoice> options = getCurrentOptions();
         currentSelection = options.get(0);
         updateModeControls();
         updateColorStrip();
         updatePreview();
+    }
+
+    private List<ColorChoice> getCurrentOptions() {
+        if (currentTopic == LearningType.NUMBERS) {
+            return currentMode == ColorMode.BASIC ? basicNumbers : advancedNumbers;
+        }
+        return currentMode == ColorMode.BASIC ? basicColors : advancedColors;
     }
 
     private void updateModeControls() {
@@ -208,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void updateColorStrip() {
         binding.colorBar.removeAllViews();
-        List<ColorChoice> options = (currentMode == ColorMode.BASIC) ? basicColors : advancedColors;
+        List<ColorChoice> options = getCurrentOptions();
         int swatchHeight = dpToPx(42);
         int cornerRadius = dpToPx(10);
 
@@ -221,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             );
             params.setMargins(3, 3, 3, 3);
             swatch.setLayoutParams(params);
-            swatch.setText("");
             swatch.setPadding(0, 0, 0, 0);
             swatch.setAllCaps(false);
             swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.92f);
@@ -233,6 +267,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             border.setCornerRadius(cornerRadius);
             border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(110, 255, 255, 255));
             swatch.setBackground(border);
+
+            if (currentTopic == LearningType.NUMBERS) {
+                swatch.setText(choice.getName());
+                swatch.setTextSize(18);
+                swatch.setTextColor(isDarkColor(choice.getColor()) ? Color.WHITE : Color.BLACK);
+                swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            } else {
+                swatch.setText("");
+            }
 
             binding.colorBar.addView(swatch);
         }
@@ -435,6 +478,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .apply();
     }
 
+    private void saveSelectedTopic() {
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .putInt(PREF_TOPIC, currentTopic.ordinal())
+                .apply();
+    }
+
     private int resolveBounceDuration(int speed) {
         int clampedSpeed = Math.max(1, Math.min(10, speed));
         double visualSpeed = 1 + ((clampedSpeed - 1) * 5.0 / 9.0);
@@ -522,5 +572,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
+    }
+
+    private boolean isDarkColor(int color) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        double luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+        return luminance < 180;
     }
 }

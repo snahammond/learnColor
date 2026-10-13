@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String EXTRA_SELECTED_MODE = "selected_mode";
+    public static final String EXTRA_SELECTED_TOPIC = "selected_topic";
     public static final String EXTRA_SELECTED_JINGLE = "selected_jingle";
     public static final String EXTRA_BOUNCE_SPEED = "bounce_speed";
     public static final String PREFS_NAME = "learn_color_settings";
@@ -23,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final int DEFAULT_BOUNCE_SPEED = 5;
 
     private int selectedMode;
+    private int selectedTopic = LearningType.COLORS.ordinal();
     private int selectedJingle = DEFAULT_JINGLE;
     private int selectedBounceSpeed = DEFAULT_BOUNCE_SPEED;
 
@@ -32,12 +34,15 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         selectedMode = getIntent().getIntExtra(EXTRA_SELECTED_MODE, 0);
+        selectedTopic = getIntent().getIntExtra(EXTRA_SELECTED_TOPIC, LearningType.COLORS.ordinal());
         selectedJingle = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getInt(PREF_JINGLE, getIntent().getIntExtra(EXTRA_SELECTED_JINGLE, DEFAULT_JINGLE));
         selectedBounceSpeed = Math.max(1, Math.min(10, getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getInt(PREF_BOUNCE_SPEED, getIntent().getIntExtra(EXTRA_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED))));
 
         Button backButton = findViewById(R.id.settingsBackButton);
+        Button colorsButton = findViewById(R.id.settingsColorsButton);
+        Button numbersButton = findViewById(R.id.settingsNumbersButton);
         Button basicButton = findViewById(R.id.settingsBasicButton);
         Button advancedButton = findViewById(R.id.settingsAdvancedButton);
         Button saveButton = findViewById(R.id.settingsSaveButton);
@@ -50,9 +55,20 @@ public class SettingsActivity extends AppCompatActivity {
         TextView bounceSpeedValue = findViewById(R.id.bounceSpeedValue);
 
         backButton.setOnClickListener(v -> finish());
+        updateTopicButtons(colorsButton, numbersButton);
         updateModeButtons(basicButton, advancedButton);
         updateJingleSelection(jingleGroup, simpleRadioButton, oceanButton, soulfulButton, syncButton);
         updateBounceSpeedValue(bounceSpeedSlider, bounceSpeedValue);
+
+        colorsButton.setOnClickListener(v -> {
+            selectedTopic = LearningType.COLORS.ordinal();
+            updateTopicButtons(colorsButton, numbersButton);
+        });
+
+        numbersButton.setOnClickListener(v -> {
+            selectedTopic = LearningType.NUMBERS.ordinal();
+            updateTopicButtons(colorsButton, numbersButton);
+        });
 
         basicButton.setOnClickListener(v -> {
             selectedMode = 0;
@@ -89,15 +105,31 @@ public class SettingsActivity extends AppCompatActivity {
                     .edit()
                     .putInt(PREF_JINGLE, selectedJingle)
                     .putInt(PREF_BOUNCE_SPEED, selectedBounceSpeed)
+                    .putInt("selected_learning_topic", selectedTopic)
                     .apply();
 
             Intent result = new Intent();
             result.putExtra(EXTRA_SELECTED_MODE, selectedMode);
+            result.putExtra(EXTRA_SELECTED_TOPIC, selectedTopic);
             result.putExtra(EXTRA_SELECTED_JINGLE, selectedJingle);
             result.putExtra(EXTRA_BOUNCE_SPEED, selectedBounceSpeed);
             setResult(RESULT_OK, result);
             finish();
         });
+    }
+
+    private void updateTopicButtons(Button colorsButton, Button numbersButton) {
+        boolean colorsSelected = selectedTopic == LearningType.COLORS.ordinal();
+
+        colorsButton.setBackgroundColor(
+                colorsSelected ? Color.parseColor("#7C3AED") : Color.parseColor("#E7E7E7")
+        );
+        numbersButton.setBackgroundColor(
+                colorsSelected ? Color.parseColor("#E7E7E7") : Color.parseColor("#7C3AED")
+        );
+
+        colorsButton.setTextColor(colorsSelected ? Color.WHITE : Color.parseColor("#1C1C1C"));
+        numbersButton.setTextColor(colorsSelected ? Color.parseColor("#1C1C1C") : Color.WHITE);
     }
 
     private void updateModeButtons(Button basicButton, Button advancedButton) {
