@@ -295,13 +295,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setTextColor(Color.parseColor("#111827"));
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 250f);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 320f);
             binding.colorLabel.setGravity(android.view.Gravity.CENTER);
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             binding.colorLabel.setAlpha(1f);
             binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
+            binding.colorLabel.setTranslationY(0f);
             binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
             binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
             binding.colorPreview.setClipToOutline(false);
