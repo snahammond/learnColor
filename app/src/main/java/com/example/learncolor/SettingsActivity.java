@@ -34,8 +34,8 @@ public class SettingsActivity extends AppCompatActivity {
         selectedMode = getIntent().getIntExtra(EXTRA_SELECTED_MODE, 0);
         selectedJingle = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getInt(PREF_JINGLE, getIntent().getIntExtra(EXTRA_SELECTED_JINGLE, DEFAULT_JINGLE));
-        selectedBounceSpeed = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .getInt(PREF_BOUNCE_SPEED, getIntent().getIntExtra(EXTRA_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED));
+        selectedBounceSpeed = Math.max(1, Math.min(10, getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt(PREF_BOUNCE_SPEED, getIntent().getIntExtra(EXTRA_BOUNCE_SPEED, DEFAULT_BOUNCE_SPEED))));
 
         Button backButton = findViewById(R.id.settingsBackButton);
         Button basicButton = findViewById(R.id.settingsBasicButton);
@@ -69,11 +69,10 @@ public class SettingsActivity extends AppCompatActivity {
             updateJingleSelection(jingleGroup, simpleRadioButton, oceanButton, soulfulButton, syncButton);
         });
 
-        bounceSpeedSlider.setProgress(selectedBounceSpeed - 1);
         bounceSpeedSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                selectedBounceSpeed = progress + 1;
+                selectedBounceSpeed = Math.max(1, Math.min(10, progress + 1));
                 updateBounceSpeedLabel(bounceSpeedValue, selectedBounceSpeed);
             }
 
@@ -116,10 +115,13 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void updateBounceSpeedValue(SeekBar bounceSpeedSlider, TextView bounceSpeedValue) {
-        bounceSpeedSlider.setMin(1);
-        bounceSpeedSlider.setMax(10);
-        bounceSpeedSlider.setProgress(Math.max(1, Math.min(10, selectedBounceSpeed)) - 1);
-        updateBounceSpeedLabel(bounceSpeedValue, selectedBounceSpeed);
+        int minSpeed = 1;
+        int maxSpeed = 10;
+        int clampedSpeed = Math.max(minSpeed, Math.min(maxSpeed, selectedBounceSpeed));
+
+        bounceSpeedSlider.setMax(maxSpeed - minSpeed);
+        bounceSpeedSlider.setProgress(clampedSpeed - minSpeed);
+        updateBounceSpeedLabel(bounceSpeedValue, clampedSpeed);
     }
 
     private void updateBounceSpeedLabel(TextView bounceSpeedValue, int speed) {

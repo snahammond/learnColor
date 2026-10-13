@@ -7,9 +7,11 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -29,6 +31,8 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int REQUEST_SETTINGS = 1001;
     private static final float TODDLER_SPEECH_RATE = 0.42f;
+    private static final float JINGLE_VOLUME = 0.72f;
+    private static final float JINGLE_DUCKED_VOLUME = 0.18f;
     private static final int PARTY_POPPER_DURATION_MS = 2400;
     private static final String PREFS_NAME = "learn_color_settings";
     private static final String PREF_JINGLE = "selected_jingle";
@@ -96,6 +100,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (status == TextToSpeech.SUCCESS) {
             textToSpeech.setLanguage(Locale.US);
             textToSpeech.setSpeechRate(TODDLER_SPEECH_RATE);
+            textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+                    duckJingleForSpeech();
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    restoreJingleVolume();
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    restoreJingleVolume();
+                }
+
+                @Override
+                public void onStop(String utteranceId, boolean interrupted) {
+                    restoreJingleVolume();
+                }
+            });
         }
     }
 
@@ -184,27 +209,29 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void updateColorStrip() {
         binding.colorBar.removeAllViews();
         List<ColorChoice> options = (currentMode == ColorMode.BASIC) ? basicColors : advancedColors;
+        int swatchHeight = dpToPx(54);
+        int cornerRadius = dpToPx(12);
 
         for (ColorChoice choice : options) {
             Button swatch = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    swatchHeight,
                     1f
             );
-            params.setMargins(8, 10, 8, 10);
+            params.setMargins(4, 4, 4, 4);
             swatch.setLayoutParams(params);
             swatch.setText("");
             swatch.setPadding(0, 0, 0, 0);
             swatch.setAllCaps(false);
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.7f);
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.8f);
             swatch.setOnClickListener(v -> selectColor(choice));
 
             GradientDrawable border = new GradientDrawable();
             border.setShape(GradientDrawable.RECTANGLE);
             border.setColor(choice.getColor());
-            border.setCornerRadius(dpToPx(16));
-            border.setStroke(4, choice.equals(currentSelection) ? Color.WHITE : Color.argb(100, 255, 255, 255));
+            border.setCornerRadius(cornerRadius);
+            border.setStroke(3, choice.equals(currentSelection) ? Color.WHITE : Color.argb(100, 255, 255, 255));
             swatch.setBackground(border);
 
             binding.colorBar.addView(swatch);
@@ -361,11 +388,26 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
 
             jinglePlayer = MediaPlayer.create(this, selectedJingleResId);
+            if (jinglePlayer == null) {
+                return;
+            }
             jinglePlayer.setLooping(true);
-            jinglePlayer.setVolume(0.9f, 0.9f);
+            jinglePlayer.setVolume(JINGLE_VOLUME, JINGLE_VOLUME);
             jinglePlayer.start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void duckJingleForSpeech() {
+        if (jinglePlayer != null && jinglePlayer.isPlaying()) {
+            jinglePlayer.setVolume(JINGLE_DUCKED_VOLUME, JINGLE_DUCKED_VOLUME);
+        }
+    }
+
+    private void restoreJingleVolume() {
+        if (jinglePlayer != null) {
+            jinglePlayer.setVolume(JINGLE_VOLUME, JINGLE_VOLUME);
         }
     }
 
@@ -472,7 +514,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         textToSpeech.setSpeechRate(TODDLER_SPEECH_RATE);
-        textToSpeech.speak(currentSelection.getName(), TextToSpeech.QUEUE_FLUSH, null, "learn_color");
+        Bundle speechParams = new Bundle();
+        speechParams.putString(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_MUSIC));
+        textToSpeech.speak(currentSelection.getName(), TextToSpeech.QUEUE_FLUSH, speechParams, "learn_color");
     }
 
     private int dpToPx(int dp) {
