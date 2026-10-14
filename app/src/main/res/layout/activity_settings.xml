@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F4"
+    android:background="#F5F3F1"
     android:fillViewport="true">
 
     <LinearLayout
@@ -15,14 +15,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/settingsBackButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:background="@android:color/transparent"
                 android:text="←"
                 android:textColor="#1F2937"
@@ -39,37 +39,40 @@
                 android:textStyle="bold" />
 
             <View
-                android:layout_width="48dp"
-                android:layout_height="48dp" />
+                android:layout_width="42dp"
+                android:layout_height="42dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
-            android:elevation="4dp"
+            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:text="Choose what to learn"
                 android:textColor="#6B7280"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
                 <Button
                     android:id="@+id/settingsColorsButton"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="42dp"
                     android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     android:backgroundTint="#7C3AED"
                     android:text="Colors"
                     android:textColor="#FFFFFF" />
@@ -77,43 +80,53 @@
                 <Button
                     android:id="@+id/settingsNumbersButton"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="42dp"
                     android:layout_weight="1"
-                    android:backgroundTint="#E7E7E7"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="#F3F4F6"
                     android:text="Numbers"
-                    android:textColor="#1C1C1C" />
+                    android:textColor="#1F2937" />
+
+                <Button
+                    android:id="@+id/settingsShapesButton"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#F3F4F6"
+                    android:text="Shapes"
+                    android:textColor="#1F2937" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:background="#FFFFFF"
-            android:elevation="4dp"
+            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:text="Choose a level"
                 android:textColor="#6B7280"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/settingsBasicButton"
                     android:layout_width="0dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     android:backgroundTint="#7C3AED"
                     android:text="Basic"
                     android:textColor="#FFFFFF" />
@@ -122,30 +135,31 @@
                     android:id="@+id/settingsAdvancedButton"
                     android:layout_width="0dp"
                     android:layout_height="44dp"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:backgroundTint="#E7E7E7"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="#F3F4F6"
                     android:text="Advanced"
-                    android:textColor="#1C1C1C" />
+                    android:textColor="#1F2937" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:background="#FFFFFF"
-            android:elevation="4dp"
+            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="10dp"
                 android:text="Choose a jingle"
                 android:textColor="#6B7280"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <RadioGroup
                 android:id="@+id/jingleSelectionGroup"
@@ -183,24 +197,25 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:background="#FFFFFF"
-            android:elevation="4dp"
+            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp"
+            android:layout_marginBottom="18dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bounce speed"
                 android:textColor="#6B7280"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/bounceSpeedValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="8dp"
                 android:text="Speed: 5/10"
                 android:textColor="#1F2937"
@@ -220,7 +235,6 @@
             android:id="@+id/settingsSaveButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="20dp"
             android:backgroundTint="#1F2937"
             android:text="Save"
             android:textColor="#FFFFFF" />

@@ -43,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
         Button backButton = findViewById(R.id.settingsBackButton);
         Button colorsButton = findViewById(R.id.settingsColorsButton);
         Button numbersButton = findViewById(R.id.settingsNumbersButton);
+        Button shapesButton = findViewById(R.id.settingsShapesButton);
         Button basicButton = findViewById(R.id.settingsBasicButton);
         Button advancedButton = findViewById(R.id.settingsAdvancedButton);
         Button saveButton = findViewById(R.id.settingsSaveButton);
@@ -55,19 +56,24 @@ public class SettingsActivity extends AppCompatActivity {
         TextView bounceSpeedValue = findViewById(R.id.bounceSpeedValue);
 
         backButton.setOnClickListener(v -> finish());
-        updateTopicButtons(colorsButton, numbersButton);
+        updateTopicButtons(colorsButton, numbersButton, shapesButton);
         updateModeButtons(basicButton, advancedButton);
         updateJingleSelection(jingleGroup, simpleRadioButton, oceanButton, soulfulButton, syncButton);
         updateBounceSpeedValue(bounceSpeedSlider, bounceSpeedValue);
 
         colorsButton.setOnClickListener(v -> {
             selectedTopic = LearningType.COLORS.ordinal();
-            updateTopicButtons(colorsButton, numbersButton);
+            updateTopicButtons(colorsButton, numbersButton, shapesButton);
         });
 
         numbersButton.setOnClickListener(v -> {
             selectedTopic = LearningType.NUMBERS.ordinal();
-            updateTopicButtons(colorsButton, numbersButton);
+            updateTopicButtons(colorsButton, numbersButton, shapesButton);
+        });
+
+        shapesButton.setOnClickListener(v -> {
+            selectedTopic = LearningType.SHAPES.ordinal();
+            updateTopicButtons(colorsButton, numbersButton, shapesButton);
         });
 
         basicButton.setOnClickListener(v -> {
@@ -118,18 +124,18 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void updateTopicButtons(Button colorsButton, Button numbersButton) {
+    private void updateTopicButtons(Button colorsButton, Button numbersButton, Button shapesButton) {
         boolean colorsSelected = selectedTopic == LearningType.COLORS.ordinal();
+        boolean numbersSelected = selectedTopic == LearningType.NUMBERS.ordinal();
+        boolean shapesSelected = selectedTopic == LearningType.SHAPES.ordinal();
 
-        colorsButton.setBackgroundColor(
-                colorsSelected ? Color.parseColor("#7C3AED") : Color.parseColor("#E7E7E7")
-        );
-        numbersButton.setBackgroundColor(
-                colorsSelected ? Color.parseColor("#E7E7E7") : Color.parseColor("#7C3AED")
-        );
+        colorsButton.setBackgroundColor(colorsSelected ? Color.parseColor("#7C3AED") : Color.parseColor("#F3F4F6"));
+        numbersButton.setBackgroundColor(numbersSelected ? Color.parseColor("#7C3AED") : Color.parseColor("#F3F4F6"));
+        shapesButton.setBackgroundColor(shapesSelected ? Color.parseColor("#7C3AED") : Color.parseColor("#F3F4F6"));
 
-        colorsButton.setTextColor(colorsSelected ? Color.WHITE : Color.parseColor("#1C1C1C"));
-        numbersButton.setTextColor(colorsSelected ? Color.parseColor("#1C1C1C") : Color.WHITE);
+        colorsButton.setTextColor(colorsSelected ? Color.WHITE : Color.parseColor("#1F2937"));
+        numbersButton.setTextColor(numbersSelected ? Color.WHITE : Color.parseColor("#1F2937"));
+        shapesButton.setTextColor(shapesSelected ? Color.WHITE : Color.parseColor("#1F2937"));
     }
 
     private void updateModeButtons(Button basicButton, Button advancedButton) {

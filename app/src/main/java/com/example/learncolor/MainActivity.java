@@ -92,6 +92,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             new ColorChoice("10", Color.rgb(180, 120, 95))
     ));
 
+    private final List<ColorChoice> basicShapes = new ArrayList<>(Arrays.asList(
+            new ColorChoice("Circle", Color.WHITE),
+            new ColorChoice("Triangle", Color.WHITE),
+            new ColorChoice("Square", Color.WHITE),
+            new ColorChoice("Rectangle", Color.WHITE)
+    ));
+
+    private final List<ColorChoice> advancedShapes = new ArrayList<>(Arrays.asList(
+            new ColorChoice("Circle", Color.WHITE),
+            new ColorChoice("Triangle", Color.WHITE),
+            new ColorChoice("Square", Color.WHITE),
+            new ColorChoice("Rectangle", Color.WHITE),
+            new ColorChoice("Pentagon", Color.WHITE),
+            new ColorChoice("Hexagon", Color.WHITE),
+            new ColorChoice("Star", Color.WHITE)
+    ));
+
+    private ShapePreviewView shapePreviewView;
     private ColorMode currentMode = ColorMode.BASIC;
     private LearningType currentTopic = LearningType.COLORS;
     private ColorChoice currentSelection = basicColors.get(0);
@@ -115,6 +133,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             triggerPartyPopper();
             speakCurrentColor();
         });
+
+        shapePreviewView = new ShapePreviewView(this);
+        shapePreviewView.setVisibility(View.GONE);
+        ((FrameLayout) binding.colorPreview).addView(shapePreviewView,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                ));
 
         setMode(ColorMode.BASIC);
         binding.modeOptions.setVisibility(View.GONE);
@@ -218,6 +244,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (currentTopic == LearningType.NUMBERS) {
             return currentMode == ColorMode.BASIC ? basicNumbers : advancedNumbers;
         }
+        if (currentTopic == LearningType.SHAPES) {
+            return currentMode == ColorMode.BASIC ? basicShapes : advancedShapes;
+        }
         return currentMode == ColorMode.BASIC ? basicColors : advancedColors;
     }
 
@@ -292,6 +321,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void updatePreview() {
         final int targetColor = currentSelection.getColor();
         binding.colorLabel.setText(currentSelection.getName());
+        binding.colorLabel.setIncludeFontPadding(false);
+        binding.colorLabel.setSingleLine(true);
 
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setTextColor(Color.parseColor("#111827"));
@@ -303,6 +334,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             binding.colorLabel.setAlpha(1f);
             binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
             binding.colorLabel.setTranslationY(-8f);
+            binding.colorLabel.setVisibility(View.VISIBLE);
+            shapePreviewView.setVisibility(View.GONE);
             binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
             binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
             binding.colorPreview.setClipToOutline(false);
@@ -311,6 +344,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             return;
         }
 
+        if (currentTopic == LearningType.SHAPES) {
+            binding.colorLabel.setVisibility(View.GONE);
+            shapePreviewView.setVisibility(View.VISIBLE);
+            shapePreviewView.setShapeName(currentSelection.getName());
+            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
+            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
+            binding.colorPreview.setClipToOutline(false);
+            binding.colorPreview.setOutlineProvider(null);
+            animatePreviewToColor(Color.parseColor("#F7F4F0"));
+            return;
+        }
+
+        shapePreviewView.setVisibility(View.GONE);
+        binding.colorLabel.setVisibility(View.VISIBLE);
         binding.colorLabel.setTextColor(Color.WHITE);
         binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
         binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
@@ -417,13 +464,15 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setScaleX(1f);
             binding.colorLabel.setScaleY(1f);
+            float motionTravel = 8f + (bounceSpeed * 4f);
+            long motionDuration = Math.max(500, 1800 - (bounceSpeed * 120L));
             labelAnimator = ObjectAnimator.ofPropertyValuesHolder(
                     binding.colorLabel,
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.95f, 1.08f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.95f, 1.08f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -12f, 0f)
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.96f, 1.12f, 1.0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.96f, 1.12f, 1.0f),
+                    PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -motionTravel, 0f)
             );
-            labelAnimator.setDuration(Math.max(700, animationDuration - 300));
+            labelAnimator.setDuration(motionDuration);
             labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
             labelAnimator.setRepeatMode(ObjectAnimator.RESTART);
             labelAnimator.start();
