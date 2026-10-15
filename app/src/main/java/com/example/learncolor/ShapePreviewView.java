@@ -11,9 +11,9 @@ import android.view.View;
 
 public class ShapePreviewView extends View {
     private String shapeName = "Circle";
+    private int shapeColor = Color.parseColor("#FF7A59");
     private final Paint outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public ShapePreviewView(Context context) {
         this(context, null);
@@ -28,16 +28,13 @@ public class ShapePreviewView extends View {
         outlinePaint.setStrokeCap(Paint.Cap.ROUND);
 
         fillPaint.setStyle(Paint.Style.FILL);
-        fillPaint.setColor(Color.argb(28, 17, 24, 39));
-
-        labelPaint.setColor(Color.parseColor("#1F2937"));
-        labelPaint.setTextAlign(Paint.Align.CENTER);
-        labelPaint.setTextSize(28f);
-        labelPaint.setFakeBoldText(true);
+        fillPaint.setColor(shapeColor);
     }
 
-    public void setShapeName(String shapeName) {
+    public void setShapeName(String shapeName, int shapeColor) {
         this.shapeName = shapeName == null ? "Circle" : shapeName;
+        this.shapeColor = shapeColor;
+        fillPaint.setColor(shapeColor);
         invalidate();
     }
 
@@ -51,45 +48,44 @@ public class ShapePreviewView extends View {
 
         switch (shapeName) {
             case "Circle":
+                canvas.drawCircle(centerX, centerY, size / 2.2f, fillPaint);
                 canvas.drawCircle(centerX, centerY, size / 2.2f, outlinePaint);
                 break;
             case "Triangle":
-                drawPolygon(canvas, centerX, centerY, size / 1.8f, 3);
+                drawPolygon(canvas, centerX, centerY, size / 1.8f, 3, -Math.PI / 2);
                 break;
             case "Square":
-                drawRoundedRect(canvas, centerX, centerY, size / 1.8f, size / 1.8f, 24f);
+                drawRectShape(canvas, centerX, centerY, size / 1.8f, size / 1.8f);
                 break;
             case "Rectangle":
-                drawRoundedRect(canvas, centerX, centerY, size / 1.5f, size / 2.1f, 22f);
+                drawRectShape(canvas, centerX, centerY, size / 1.55f, size / 2.2f);
                 break;
             case "Pentagon":
-                drawPolygon(canvas, centerX, centerY, size / 1.85f, 5);
+                drawPolygon(canvas, centerX, centerY, size / 1.85f, 5, -Math.PI / 2 + (Math.PI / 5));
                 break;
             case "Hexagon":
-                drawPolygon(canvas, centerX, centerY, size / 1.8f, 6);
+                drawPolygon(canvas, centerX, centerY, size / 1.8f, 6, -Math.PI / 2);
                 break;
             case "Star":
                 drawStar(canvas, centerX, centerY, size / 1.9f, size / 3.5f);
                 break;
             default:
+                canvas.drawCircle(centerX, centerY, size / 2.2f, fillPaint);
                 canvas.drawCircle(centerX, centerY, size / 2.2f, outlinePaint);
                 break;
         }
-
-        float textY = centerY + size * 0.9f;
-        canvas.drawText(shapeName, centerX, textY, labelPaint);
     }
 
-    private void drawRoundedRect(Canvas canvas, float cx, float cy, float width, float height, float radius) {
+    private void drawRectShape(Canvas canvas, float cx, float cy, float width, float height) {
         RectF rect = new RectF(cx - width / 2f, cy - height / 2f, cx + width / 2f, cy + height / 2f);
-        canvas.drawRoundRect(rect, radius, radius, fillPaint);
-        canvas.drawRoundRect(rect, radius, radius, outlinePaint);
+        canvas.drawRect(rect, fillPaint);
+        canvas.drawRect(rect, outlinePaint);
     }
 
-    private void drawPolygon(Canvas canvas, float cx, float cy, float radius, int sides) {
+    private void drawPolygon(Canvas canvas, float cx, float cy, float radius, int sides, double startAngle) {
         Path path = new Path();
         for (int i = 0; i <= sides; i++) {
-            double angle = Math.PI / 2 + (Math.PI * 2 * i / sides);
+            double angle = startAngle + (Math.PI * 2 * i / sides);
             float x = (float) (cx + Math.cos(angle) * radius);
             float y = (float) (cy + Math.sin(angle) * radius);
             if (i == 0) {

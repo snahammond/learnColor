@@ -93,20 +93,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ));
 
     private final List<ColorChoice> basicShapes = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Circle", Color.WHITE),
-            new ColorChoice("Triangle", Color.WHITE),
-            new ColorChoice("Square", Color.WHITE),
-            new ColorChoice("Rectangle", Color.WHITE)
+            new ColorChoice("Circle", Color.parseColor("#FF7A59")),
+            new ColorChoice("Triangle", Color.parseColor("#F7C948")),
+            new ColorChoice("Square", Color.parseColor("#3CCB7F")),
+            new ColorChoice("Rectangle", Color.parseColor("#4C8DFF"))
     ));
 
     private final List<ColorChoice> advancedShapes = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Circle", Color.WHITE),
-            new ColorChoice("Triangle", Color.WHITE),
-            new ColorChoice("Square", Color.WHITE),
-            new ColorChoice("Rectangle", Color.WHITE),
-            new ColorChoice("Pentagon", Color.WHITE),
-            new ColorChoice("Hexagon", Color.WHITE),
-            new ColorChoice("Star", Color.WHITE)
+            new ColorChoice("Circle", Color.parseColor("#FF7A59")),
+            new ColorChoice("Triangle", Color.parseColor("#F7C948")),
+            new ColorChoice("Square", Color.parseColor("#3CCB7F")),
+            new ColorChoice("Rectangle", Color.parseColor("#4C8DFF")),
+            new ColorChoice("Pentagon", Color.parseColor("#A66CFF")),
+            new ColorChoice("Hexagon", Color.parseColor("#FF5EBC")),
+            new ColorChoice("Star", Color.parseColor("#5ED7D1"))
     ));
 
     private ShapePreviewView shapePreviewView;
@@ -288,7 +288,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             swatch.setLayoutParams(params);
             swatch.setPadding(0, 0, 0, 0);
             swatch.setAllCaps(false);
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.92f);
+            swatch.setMinWidth(0);
+            swatch.setMinHeight(0);
+            swatch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.94f);
             swatch.setOnClickListener(v -> selectColor(choice));
 
             GradientDrawable border = new GradientDrawable();
@@ -300,8 +303,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             if (currentTopic == LearningType.NUMBERS) {
                 swatch.setText(choice.getName());
-                swatch.setTextSize(18);
                 swatch.setTextColor(isDarkColor(choice.getColor()) ? Color.WHITE : Color.BLACK);
+                swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            } else if (currentTopic == LearningType.SHAPES) {
+                swatch.setText(getShapeGlyph(choice.getName()));
+                swatch.setTextColor(Color.WHITE);
                 swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             } else {
                 swatch.setText("");
@@ -326,14 +332,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setTextColor(Color.parseColor("#111827"));
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 420f);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 360f);
             binding.colorLabel.setGravity(android.view.Gravity.CENTER);
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             binding.colorLabel.setAlpha(1f);
             binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
-            binding.colorLabel.setTranslationY(-8f);
+            binding.colorLabel.setTranslationY(0f);
             binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.GONE);
             binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
@@ -345,14 +351,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         if (currentTopic == LearningType.SHAPES) {
-            binding.colorLabel.setVisibility(View.GONE);
+            binding.colorLabel.setTextColor(Color.WHITE);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
+            binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
+            binding.colorLabel.setPadding(dpToPx(22), dpToPx(10), dpToPx(22), dpToPx(10));
+            binding.colorLabel.setBackground(null);
+            binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.VISIBLE);
-            shapePreviewView.setShapeName(currentSelection.getName());
-            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
+            shapePreviewView.setShapeName(currentSelection.getName(), currentSelection.getColor());
+            binding.colorPreview.setBackgroundColor(currentSelection.getColor());
+            binding.glassOverlay.setBackgroundColor(Color.argb(65, 255, 255, 255));
             binding.colorPreview.setClipToOutline(false);
             binding.colorPreview.setOutlineProvider(null);
-            animatePreviewToColor(Color.parseColor("#F7F4F0"));
+            animatePreviewToColor(targetColor);
             return;
         }
 
@@ -464,12 +475,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setScaleX(1f);
             binding.colorLabel.setScaleY(1f);
-            float motionTravel = 8f + (bounceSpeed * 4f);
-            long motionDuration = Math.max(500, 1800 - (bounceSpeed * 120L));
+            float motionTravel = 6f + (bounceSpeed * 2.4f);
+            long motionDuration = Math.max(700, 1700 - (bounceSpeed * 100L));
             labelAnimator = ObjectAnimator.ofPropertyValuesHolder(
                     binding.colorLabel,
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.96f, 1.12f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.96f, 1.12f, 1.0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.97f, 1.08f, 1.0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.97f, 1.08f, 1.0f),
                     PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -motionTravel, 0f)
             );
             labelAnimator.setDuration(motionDuration);
@@ -609,8 +620,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private int resolveBounceDuration(int speed) {
         int clampedSpeed = Math.max(1, Math.min(10, speed));
-        double visualSpeed = 1 + ((clampedSpeed - 1) * 5.0 / 9.0);
-        return (int) Math.max(650, 2200 - (visualSpeed - 1) * 180);
+        return Math.max(600, 1800 - ((clampedSpeed - 1) * 120));
+    }
+
+    private String getShapeGlyph(String shapeName) {
+        switch (shapeName) {
+            case "Circle": return "◯";
+            case "Triangle": return "△";
+            case "Square": return "□";
+            case "Rectangle": return "▭";
+            case "Pentagon": return "⬟";
+            case "Hexagon": return "⬡";
+            case "Star": return "★";
+            default: return "◯";
+        }
     }
 
     private void triggerPartyPopper() {

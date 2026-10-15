@@ -2,31 +2,33 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F3F1"
+    android:background="#EEF2FF"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:paddingBottom="32dp">
+        android:padding="18dp"
+        android:paddingBottom="30dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/settingsBackButton"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:background="@android:color/transparent"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="#FFFFFF"
                 android:text="←"
                 android:textColor="#1F2937"
-                android:textSize="28sp" />
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:backgroundTint="#FFFFFF" />
 
             <TextView
                 android:layout_width="0dp"
@@ -35,35 +37,39 @@
                 android:gravity="center"
                 android:text="Settings"
                 android:textColor="#1F2937"
-                android:textSize="28sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <View
-                android:layout_width="42dp"
-                android:layout_height="42dp" />
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="#F8FAFC"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="18dp"
-            android:layout_marginBottom="16dp">
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#F8FAFC">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:text="Choose what to learn"
                 android:textColor="#6B7280"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
@@ -73,7 +79,14 @@
                     android:layout_height="42dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#7C3AED"
+                    android:minWidth="0dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:includeFontPadding="false"
+                    android:textAllCaps="false"
+                    android:maxLines="1"
+                    android:textSize="12sp"
+                    android:backgroundTint="#8B5CF6"
                     android:text="Colors"
                     android:textColor="#FFFFFF" />
 
@@ -83,7 +96,14 @@
                     android:layout_height="42dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#F3F4F6"
+                    android:minWidth="0dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:includeFontPadding="false"
+                    android:textAllCaps="false"
+                    android:maxLines="1"
+                    android:textSize="12sp"
+                    android:backgroundTint="#E9EEF5"
                     android:text="Numbers"
                     android:textColor="#1F2937" />
 
@@ -92,7 +112,14 @@
                     android:layout_width="0dp"
                     android:layout_height="42dp"
                     android:layout_weight="1"
-                    android:backgroundTint="#F3F4F6"
+                    android:minWidth="0dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:includeFontPadding="false"
+                    android:textAllCaps="false"
+                    android:maxLines="1"
+                    android:textSize="12sp"
+                    android:backgroundTint="#E9EEF5"
                     android:text="Shapes"
                     android:textColor="#1F2937" />
             </LinearLayout>
@@ -101,24 +128,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="#F8FAFC"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="18dp"
-            android:layout_marginBottom="16dp">
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#F8FAFC">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:text="Choose a level"
                 android:textColor="#6B7280"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -127,7 +157,8 @@
                     android:layout_height="44dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#7C3AED"
+                    android:backgroundTint="#8B5CF6"
+                    android:textAllCaps="false"
                     android:text="Basic"
                     android:textColor="#FFFFFF" />
 
@@ -137,7 +168,8 @@
                     android:layout_height="44dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:backgroundTint="#F3F4F6"
+                    android:backgroundTint="#E9EEF5"
+                    android:textAllCaps="false"
                     android:text="Advanced"
                     android:textColor="#1F2937" />
             </LinearLayout>
@@ -146,11 +178,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="#F8FAFC"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="18dp"
-            android:layout_marginBottom="16dp">
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#F8FAFC">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -158,8 +191,10 @@
                 android:layout_marginBottom="10dp"
                 android:text="Choose a jingle"
                 android:textColor="#6B7280"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08" />
 
             <RadioGroup
                 android:id="@+id/jingleSelectionGroup"
@@ -197,19 +232,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="#F8FAFC"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="18dp"
-            android:layout_marginBottom="18dp">
+            android:padding="16dp"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="#F8FAFC">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bounce speed"
                 android:textColor="#6B7280"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08" />
 
             <TextView
                 android:id="@+id/bounceSpeedValue"
@@ -228,15 +266,19 @@
                 android:layout_height="wrap_content"
                 android:max="9"
                 android:min="0"
-                android:progress="4" />
+                android:progress="4"
+                android:progressTint="#7C3AED"
+                android:thumbTint="#7C3AED" />
         </LinearLayout>
 
         <Button
             android:id="@+id/settingsSaveButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:backgroundTint="#1F2937"
+            android:backgroundTint="#111827"
             android:text="Save"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:textStyle="bold" />
     </LinearLayout>
 </ScrollView>
