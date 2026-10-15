@@ -61,7 +61,7 @@ public class ShapePreviewView extends View {
                 drawRectShape(canvas, centerX, centerY, size / 1.55f, size / 2.2f);
                 break;
             case "Pentagon":
-                drawPolygon(canvas, centerX, centerY, size / 1.85f, 5, -Math.PI / 2 + (Math.PI / 5));
+                drawPolygon(canvas, centerX, centerY, size / 1.8f, 5, -Math.PI / 2 + (Math.PI / 5));
                 break;
             case "Hexagon":
                 drawPolygon(canvas, centerX, centerY, size / 1.8f, 6, -Math.PI / 2);
@@ -84,7 +84,7 @@ public class ShapePreviewView extends View {
 
     private void drawPolygon(Canvas canvas, float cx, float cy, float radius, int sides, double startAngle) {
         Path path = new Path();
-        for (int i = 0; i <= sides; i++) {
+        for (int i = 0; i < sides; i++) {
             double angle = startAngle + (Math.PI * 2 * i / sides);
             float x = (float) (cx + Math.cos(angle) * radius);
             float y = (float) (cy + Math.sin(angle) * radius);

@@ -330,6 +330,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorLabel.setIncludeFontPadding(false);
         binding.colorLabel.setSingleLine(true);
 
+        binding.colorPreview.setScaleX(1f);
+        binding.colorPreview.setScaleY(1f);
+        binding.colorPreview.setTranslationX(0f);
+        binding.colorPreview.setTranslationY(0f);
+        binding.colorPreview.setRotation(0f);
+
         if (currentTopic == LearningType.NUMBERS) {
             binding.colorLabel.setTextColor(Color.parseColor("#111827"));
             binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 360f);
@@ -351,19 +357,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         if (currentTopic == LearningType.SHAPES) {
-            binding.colorLabel.setTextColor(Color.WHITE);
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
+            binding.colorLabel.setTextColor(Color.parseColor("#1F2937"));
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f);
             binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
-            binding.colorLabel.setPadding(dpToPx(22), dpToPx(10), dpToPx(22), dpToPx(10));
+            binding.colorLabel.setPadding(dpToPx(22), dpToPx(8), dpToPx(22), dpToPx(8));
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.VISIBLE);
             shapePreviewView.setShapeName(currentSelection.getName(), currentSelection.getColor());
-            binding.colorPreview.setBackgroundColor(currentSelection.getColor());
-            binding.glassOverlay.setBackgroundColor(Color.argb(65, 255, 255, 255));
+            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
+            binding.glassOverlay.setBackgroundColor(Color.argb(55, 255, 255, 255));
             binding.colorPreview.setClipToOutline(false);
             binding.colorPreview.setOutlineProvider(null);
-            animatePreviewToColor(targetColor);
+            binding.colorPreview.setScaleX(1f);
+            binding.colorPreview.setScaleY(1f);
+            binding.colorPreview.setTranslationX(0f);
+            binding.colorPreview.setTranslationY(0f);
+            binding.colorPreview.setRotation(0f);
+            animatePreviewToColor(Color.parseColor("#F7F4F0"));
             return;
         }
 
@@ -469,6 +480,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (labelAnimator != null) labelAnimator.cancel();
         if (previewBounceAnimator != null) previewBounceAnimator.cancel();
         if (previewRotateAnimator != null) previewRotateAnimator.cancel();
+
+        binding.colorPreview.setScaleX(1f);
+        binding.colorPreview.setScaleY(1f);
+        binding.colorPreview.setTranslationX(0f);
+        binding.colorPreview.setTranslationY(0f);
+        binding.colorPreview.setRotation(0f);
 
         int animationDuration = resolveBounceDuration(bounceSpeed);
 
