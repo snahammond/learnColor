@@ -1,5 +1,8 @@
 <resources>
-    <color name="purple_500">#6200EE</color>
-    <color name="primary_text">#1A1A1A</color>
-    <color name="surface_background">#FFF9F4</color>
+    <color name="purple_500">#6D5EF9</color>
+    <color name="primary_text">#111827</color>
+    <color name="surface_background">#F4F7FF</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_muted">#EEF3FF</color>
+    <color name="accent_violet">#7C6BFF</color>
 </resources>

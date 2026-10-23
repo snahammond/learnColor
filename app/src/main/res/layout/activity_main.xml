@@ -1,89 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F4"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/surface_background"
+    android:padding="20dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp">
+    <TextView
+        android:id="@+id/appTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Learn Color"
+        android:textColor="#111827"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/modeMenuButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#F5EEE7"
-            android:elevation="1dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="6dp"
-            android:clipToPadding="false"
-            android:backgroundTint="#F3E9E0"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp">
+    <TextView
+        android:id="@+id/appSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Play, listen, and learn"
+        android:textColor="#6B7280"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/modeMenuButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appTitle" />
 
-            <LinearLayout
-                android:id="@+id/colorBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#F7F0EA"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="0dp"
-                android:clipToPadding="false" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/modeMenuButton"
-            android:layout_width="42dp"
-            android:layout_height="58dp"
-            android:layout_marginStart="8dp"
-            android:background="@android:color/transparent"
-            android:backgroundTint="@android:color/transparent"
-            android:gravity="center"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="0dp"
-            android:text="⋮"
-            android:textColor="#1F2937"
-            android:textSize="28sp" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/modeMenuButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/mode_menu_button_bg"
+        android:backgroundTint="#FFFFFF"
+        android:gravity="center"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
+        android:text="⋮"
+        android:textColor="#111827"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/appTitle" />
 
     <LinearLayout
         android:id="@+id/modeOptions"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="#FFFFFF"
-        android:elevation="6dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/settings_card_bg"
+        android:elevation="4dp"
         android:orientation="vertical"
         android:padding="16dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appSubtitle">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Settings"
-            android:textColor="#1F2937"
-            android:textSize="18sp"
+            android:text="Learning mode"
+            android:textColor="#374151"
+            android:textSize="16sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="Choose a color set"
-            android:textColor="#6B7280"
-            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,38 +79,41 @@
             <Button
                 android:id="@+id/basicModeButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="44dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#7C3AED"
+                android:backgroundTint="#6D5EF9"
                 android:text="Basic"
                 android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/advancedModeButton"
                 android:layout_width="0dp"
-                android:layout_height="42dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#E7E7E7"
+                android:backgroundTint="#E5E7EB"
                 android:text="Advanced"
-                android:textColor="#1C1C1C" />
+                android:textColor="#111827" />
         </LinearLayout>
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/colorPreview"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1"
-        android:minHeight="340dp"
-        android:background="#FF0000"
+        android:layout_marginTop="18dp"
+        android:background="#FF4D4D"
         android:clickable="true"
         android:clipToOutline="true"
-        android:elevation="6dp"
+        android:elevation="8dp"
         android:focusable="true"
-        android:outlineProvider="background">
+        android:minHeight="320dp"
+        android:outlineProvider="background"
+        app:layout_constraintBottom_toTopOf="@+id/colorBarContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/modeOptions">
 
         <View
             android:id="@+id/glassOverlay"
@@ -137,13 +125,43 @@
             android:id="@+id/colorLabel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:gravity="center"
-            android:padding="0dp"
             android:text="Red"
             android:textColor="#FFFFFF"
             android:textSize="34sp"
             android:textStyle="bold" />
     </FrameLayout>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/colorBarContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/settings_card_bg"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Choose a color"
+            android:textColor="#6B7280"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/colorBar"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="#F3F4F6"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
