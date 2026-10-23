@@ -368,14 +368,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setRotation(0f);
 
         if (currentTopic == LearningType.NUMBERS) {
-            binding.colorLabel.setTextColor(Color.WHITE);
+            binding.colorLabel.setTextColor(targetColor);
             binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 320f);
             binding.colorLabel.setGravity(android.view.Gravity.CENTER);
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             binding.colorLabel.setAlpha(1f);
-            binding.colorLabel.setShadowLayer(20f, 0f, 0f, Color.WHITE);
+            binding.colorLabel.setShadowLayer(18f, 0f, 0f, Color.WHITE);
             binding.colorLabel.setTranslationY(0f);
             binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.GONE);
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
             binding.colorPreview.setClipToOutline(false);
             binding.colorPreview.setOutlineProvider(null);
-            animatePreviewToColor(targetColor);
+            animatePreviewToColor(Color.parseColor("#F7F4F0"));
             return;
         }
 
@@ -428,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         final int startColor = displayedPreviewColor;
         final int effectiveStart = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : startColor;
-        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? targetColor : targetColor;
+        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : targetColor;
 
         previewAnimator = ValueAnimator.ofFloat(0f, 1f);
         previewAnimator.setDuration(550);
@@ -448,6 +448,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void applyPreviewColor(int color) {
+        if (currentTopic == LearningType.NUMBERS) {
+            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
+            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
+            binding.colorPreview.setClipToOutline(false);
+            binding.colorPreview.setOutlineProvider(null);
+            return;
+        }
+
         GradientDrawable previewBackground = new GradientDrawable();
         previewBackground.setShape(GradientDrawable.RECTANGLE);
         previewBackground.setColor(color);
