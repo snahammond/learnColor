@@ -101,7 +101,7 @@ public class ShapePreviewView extends View {
 
     private void drawPentagon(Canvas canvas, float cx, float cy, float radius) {
         Path path = new Path();
-        double baseAngle = -Math.PI / 2 + (Math.PI / 5);
+        double baseAngle = -Math.PI / 2;
         for (int i = 0; i < 5; i++) {
             double angle = baseAngle + (Math.PI * 2 * i / 5);
             float x = (float) (cx + Math.cos(angle) * radius);

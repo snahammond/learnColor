@@ -20,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "learn_color_settings";
     public static final String PREF_JINGLE = "selected_jingle";
     public static final String PREF_BOUNCE_SPEED = "selected_bounce_speed";
-    public static final int DEFAULT_JINGLE = R.raw.simple_radio_jingle_2;
+    public static final int DEFAULT_JINGLE = R.raw.soulfuljamtracks_jingle;
     public static final int DEFAULT_BOUNCE_SPEED = 5;
 
     private int selectedMode;
