@@ -236,8 +236,32 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         List<ColorChoice> options = getCurrentOptions();
         currentSelection = options.get(0);
         updateModeControls();
+        updateTopicHeader();
         updateColorStrip();
         updatePreview();
+    }
+
+    private void updateTopicHeader() {
+        String selectedTopic = getTopicLabel();
+        binding.appTitle.setText("Learn " + selectedTopic);
+        binding.appTitle.setTextColor(Color.parseColor("#1F2937"));
+        binding.appTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
+        binding.appTitle.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        binding.appTitle.setShadowLayer(10f, 0f, 2f, Color.parseColor("#DDE7FF"));
+        binding.appTitle.setLetterSpacing(0.02f);
+        binding.colorSelectorTitle.setText(getSelectionLabel());
+    }
+
+    private String getTopicLabel() {
+        if (currentTopic == LearningType.NUMBERS) return "Numbers";
+        if (currentTopic == LearningType.SHAPES) return "Shapes";
+        return "Color";
+    }
+
+    private String getSelectionLabel() {
+        if (currentTopic == LearningType.NUMBERS) return "Choose a number";
+        if (currentTopic == LearningType.SHAPES) return "Choose a shape";
+        return "Choose a color";
     }
 
     private List<ColorChoice> getCurrentOptions() {
@@ -293,17 +317,24 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             swatch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
             swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.94f);
             swatch.setOnClickListener(v -> selectColor(choice));
+            swatch.setStateListAnimator(null);
+            swatch.setElevation(0f);
+            swatch.setTranslationZ(0f);
+            swatch.setBackgroundTintList(null);
+            swatch.setBackgroundTintMode(null);
+            swatch.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            swatch.setIncludeFontPadding(false);
 
             GradientDrawable border = new GradientDrawable();
             border.setShape(GradientDrawable.RECTANGLE);
             border.setColor(choice.getColor());
             border.setCornerRadius(cornerRadius);
-            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(110, 255, 255, 255));
+            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(120, 255, 255, 255));
             swatch.setBackground(border);
 
             if (currentTopic == LearningType.NUMBERS) {
                 swatch.setText(choice.getName());
-                swatch.setTextColor(isDarkColor(choice.getColor()) ? Color.WHITE : Color.BLACK);
+                swatch.setTextColor(Color.WHITE);
                 swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             } else if (currentTopic == LearningType.SHAPES) {
                 swatch.setText(getShapeGlyph(choice.getName()));
@@ -337,14 +368,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setRotation(0f);
 
         if (currentTopic == LearningType.NUMBERS) {
-            binding.colorLabel.setTextColor(Color.parseColor("#111827"));
+            binding.colorLabel.setTextColor(targetColor);
             binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 360f);
             binding.colorLabel.setGravity(android.view.Gravity.CENTER);
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             binding.colorLabel.setAlpha(1f);
-            binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
+            binding.colorLabel.setShadowLayer(18f, 0f, 0f, Color.WHITE);
             binding.colorLabel.setTranslationY(0f);
             binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.GONE);

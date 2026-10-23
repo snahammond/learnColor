@@ -11,9 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:letterSpacing="0.02"
         android:text="Learn Color"
-        android:textColor="#111827"
-        android:textSize="32sp"
+        android:textColor="#1F2937"
+        android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/modeMenuButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -147,6 +148,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
+            android:id="@+id/colorSelectorTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
