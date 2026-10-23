@@ -368,14 +368,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setRotation(0f);
 
         if (currentTopic == LearningType.NUMBERS) {
-            binding.colorLabel.setTextColor(targetColor);
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 360f);
+            binding.colorLabel.setTextColor(Color.WHITE);
+            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 320f);
             binding.colorLabel.setGravity(android.view.Gravity.CENTER);
             binding.colorLabel.setBackground(null);
             binding.colorLabel.setPadding(0, 0, 0, 0);
             binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
             binding.colorLabel.setAlpha(1f);
-            binding.colorLabel.setShadowLayer(18f, 0f, 0f, Color.WHITE);
+            binding.colorLabel.setShadowLayer(20f, 0f, 0f, Color.WHITE);
             binding.colorLabel.setTranslationY(0f);
             binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.GONE);
@@ -428,17 +428,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         final int startColor = displayedPreviewColor;
         final int effectiveStart = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : startColor;
-        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : targetColor;
+        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? targetColor : targetColor;
 
         previewAnimator = ValueAnimator.ofFloat(0f, 1f);
         previewAnimator.setDuration(550);
         previewAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator());
         previewAnimator.addUpdateListener(animation -> {
             float fraction = (float) animation.getAnimatedValue();
-            if (currentTopic == LearningType.NUMBERS) {
-                applyPreviewColor(Color.parseColor("#F7F4F0"));
-                return;
-            }
             int blendedColor = (Integer) new ArgbEvaluator().evaluate(fraction, effectiveStart, effectiveTarget);
             applyPreviewColor(blendedColor);
         });
@@ -452,14 +448,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void applyPreviewColor(int color) {
-        if (currentTopic == LearningType.NUMBERS) {
-            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
-            binding.colorPreview.setClipToOutline(false);
-            binding.colorPreview.setOutlineProvider(null);
-            return;
-        }
-
         GradientDrawable previewBackground = new GradientDrawable();
         previewBackground.setShape(GradientDrawable.RECTANGLE);
         previewBackground.setColor(color);
@@ -520,67 +508,59 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         int animationDuration = resolveBounceDuration(bounceSpeed);
 
-        if (currentTopic == LearningType.NUMBERS) {
-            binding.colorLabel.setScaleX(1f);
-            binding.colorLabel.setScaleY(1f);
-            float motionTravel = 6f + (bounceSpeed * 2.4f);
-            long motionDuration = Math.max(700, 1700 - (bounceSpeed * 100L));
-            labelAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                    binding.colorLabel,
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.97f, 1.08f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.97f, 1.08f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -motionTravel, 0f)
-            );
-            labelAnimator.setDuration(motionDuration);
-            labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            labelAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            labelAnimator.start();
-        } else {
-            shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
-            shimmerAnimator.setDuration(Math.max(800, animationDuration));
-            shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
-            shimmerAnimator.start();
+        shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
+        shimmerAnimator.setDuration(Math.max(800, animationDuration));
+        shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        shimmerAnimator.start();
 
-            binding.colorPreview.post(() -> {
-                binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
-                binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
-                binding.colorPreview.setScaleX(0.35f);
-                binding.colorPreview.setScaleY(0.35f);
-            });
+        binding.colorPreview.post(() -> {
+            binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
+            binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
+            binding.colorPreview.setScaleX(0.35f);
+            binding.colorPreview.setScaleY(0.35f);
+        });
 
-            pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                    binding.colorPreview,
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f)
-            );
-            pulseAnimator.setDuration(animationDuration);
-            pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            pulseAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            pulseAnimator.start();
+        pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                binding.colorPreview,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f)
+        );
+        pulseAnimator.setDuration(animationDuration);
+        pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        pulseAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        pulseAnimator.start();
 
-            previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                    binding.colorPreview,
-                    PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -8f, 10f, -10f, 6f, 0f),
-                    PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -14f, 10f, -6f, 0f)
-            );
-            previewBounceAnimator.setDuration(animationDuration);
-            previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            previewBounceAnimator.start();
+        previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                binding.colorPreview,
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -8f, 10f, -10f, 6f, 0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -14f, 10f, -6f, 0f)
+        );
+        previewBounceAnimator.setDuration(animationDuration);
+        previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        previewBounceAnimator.start();
 
-            previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -2f, 3f, -2f, 1f, 0f);
-            previewRotateAnimator.setDuration(Math.max(1000, animationDuration + 200));
-            previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            previewRotateAnimator.start();
+        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -2f, 3f, -2f, 1f, 0f);
+        previewRotateAnimator.setDuration(Math.max(1000, animationDuration + 200));
+        previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        previewRotateAnimator.start();
 
-            labelAnimator = ObjectAnimator.ofFloat(binding.colorLabel, "translationY", 0f, -12f, 8f, -6f, 0f);
-            labelAnimator.setDuration(Math.max(700, animationDuration - 300));
-            labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            labelAnimator.setRepeatMode(ObjectAnimator.REVERSE);
-            labelAnimator.start();
-        }
+        binding.colorLabel.setScaleX(1f);
+        binding.colorLabel.setScaleY(1f);
+        float motionTravel = 6f + (bounceSpeed * 2.4f);
+        long motionDuration = Math.max(700, 1700 - (bounceSpeed * 100L));
+        labelAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                binding.colorLabel,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.97f, 1.08f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.97f, 1.08f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -motionTravel, 0f)
+        );
+        labelAnimator.setDuration(motionDuration);
+        labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        labelAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        labelAnimator.start();
 
         startJingleLoop();
     }
