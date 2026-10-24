@@ -104,9 +104,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ));
 
     private LearningItemCardView activePreviewCard;
-    private ColorMode currentMode = ColorMode.BASIC;
+    private Mode currentMode = Mode.BASIC;
     private LearningType currentTopic = LearningType.COLORS;
-    private LearningItem currentSelection = basicColors.get(0);
+    private LearningItem currentItem = basicColors.get(0);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.modeMenuButton.setOnClickListener(v -> openSettings());
         binding.colorPreview.setOnClickListener(v -> {
             triggerPartyPopper();
-            speakCurrentColor();
+            speakCurrentItem();
         });
 
         activePreviewCard = new LearningItemCardView(this, dpToPx(32));
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         FrameLayout.LayoutParams.MATCH_PARENT
                 ));
 
-        setMode(ColorMode.BASIC);
+        setMode(Mode.BASIC);
         binding.modeOptions.setVisibility(View.GONE);
         startLivingPreviewAnimation();
     }
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_MODE,
-                currentMode == ColorMode.BASIC ? 0 : 1);
+                currentMode == Mode.BASIC ? 0 : 1);
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_TOPIC, currentTopic.ordinal());
         intent.putExtra(SettingsActivity.EXTRA_SELECTED_JINGLE, selectedJingleResId);
         intent.putExtra(SettingsActivity.EXTRA_BOUNCE_SPEED, bounceSpeed);
@@ -218,20 +218,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             saveSelectedJingle();
             saveBounceSpeed();
             saveSelectedTopic();
-            setMode(selectedMode == 0 ? ColorMode.BASIC : ColorMode.ADVANCED);
+            setMode(selectedMode == 0 ? Mode.BASIC : Mode.ADVANCED);
             stopJingleLoop();
             startJingleLoop();
             startLivingPreviewAnimation();
         }
     }
 
-    private void setMode(ColorMode mode) {
+    private void setMode(Mode mode) {
         currentMode = mode;
         List<LearningItem> options = getCurrentOptions();
-        currentSelection = options.get(0);
+        currentItem = options.get(0);
         updateModeControls();
         updateTopicHeader();
-        updateColorStrip();
+        updateOptionStrip();
         updatePreview();
     }
 
@@ -260,16 +260,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private List<LearningItem> getCurrentOptions() {
         if (currentTopic == LearningType.NUMBERS) {
-            return currentMode == ColorMode.BASIC ? basicNumbers : advancedNumbers;
+            return currentMode == Mode.BASIC ? basicNumbers : advancedNumbers;
         }
         if (currentTopic == LearningType.SHAPES) {
-            return currentMode == ColorMode.BASIC ? basicShapes : advancedShapes;
+            return currentMode == Mode.BASIC ? basicShapes : advancedShapes;
         }
-        return currentMode == ColorMode.BASIC ? basicColors : advancedColors;
+        return currentMode == Mode.BASIC ? basicColors : advancedColors;
     }
 
     private void updateModeControls() {
-        boolean basicSelected = currentMode == ColorMode.BASIC;
+        boolean basicSelected = currentMode == Mode.BASIC;
 
         binding.basicModeButton.setBackgroundTintList(
                 android.content.res.ColorStateList.valueOf(
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.modeMenuButton.setTextColor(Color.parseColor("#1F2937"));
     }
 
-    private void updateColorStrip() {
+    private void updateOptionStrip() {
         binding.colorBar.removeAllViews();
         List<LearningItem> options = getCurrentOptions();
         int swatchHeight = dpToPx(52);
@@ -304,22 +304,22 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             );
             params.setMargins(4, 4, 4, 4);
             swatch.setLayoutParams(params);
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.96f);
-            swatch.bind(choice, choice.equals(currentSelection));
-            swatch.setOnClickListener(v -> selectColor(choice));
+            swatch.setAlpha(choice.equals(currentItem) ? 1.0f : 0.96f);
+            swatch.bind(choice, choice.equals(currentItem));
+            swatch.setOnClickListener(v -> selectLearningItem(choice));
             binding.colorBar.addView(swatch);
         }
     }
 
-    private void selectColor(LearningItem choice) {
-        currentSelection = choice;
-        updateColorStrip();
+    private void selectLearningItem(LearningItem choice) {
+        currentItem = choice;
+        updateOptionStrip();
         updatePreview();
-        speakCurrentColor();
+        speakCurrentItem();
     }
 
     private void updatePreview() {
-        binding.colorLabel.setText(currentSelection.getName());
+        binding.colorLabel.setText(currentItem.getName());
         binding.colorLabel.setVisibility(View.GONE);
         binding.glassOverlay.setVisibility(View.GONE);
         binding.colorPreview.setBackgroundColor(Color.TRANSPARENT);
@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setRotation(0f);
 
         if (activePreviewCard != null) {
-            activePreviewCard.bind(currentSelection, true);
+            activePreviewCard.bind(currentItem, true);
             activePreviewCard.setVisibility(View.VISIBLE);
             activePreviewCard.setScaleX(1f);
             activePreviewCard.setScaleY(1f);
@@ -482,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         final int[] popColors = new int[] {
                 Color.WHITE,
-                currentSelection.getColor(),
+                currentItem.getColor(),
                 Color.parseColor("#FFD54F"),
                 Color.parseColor("#FF6F61"),
                 Color.parseColor("#7C4DFF"),
@@ -506,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             params.leftMargin = centerX - size / 2;
             params.topMargin = centerY - size / 2;
             particle.setLayoutParams(params);
-            particle.setBackground(createCircleColor(popColors[i % popColors.length]));
+            particle.setBackground(createCircleParticle(popColors[i % popColors.length]));
             particle.setAlpha(1f);
             activePreviewCard.addView(particle);
             particle.bringToFront();
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
-    private GradientDrawable createCircleColor(int color) {
+    private GradientDrawable createCircleParticle(int color) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.OVAL);
         drawable.setColor(color);
@@ -551,7 +551,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return drawable;
     }
 
-    private void speakCurrentColor() {
+    private void speakCurrentItem() {
         if (textToSpeech == null) {
             Toast.makeText(this, "Speech is not ready yet.", Toast.LENGTH_SHORT).show();
             return;
@@ -560,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         textToSpeech.setSpeechRate(TODDLER_SPEECH_RATE);
         Bundle speechParams = new Bundle();
         speechParams.putString(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_MUSIC));
-        textToSpeech.speak(currentSelection.getName(), TextToSpeech.QUEUE_FLUSH, speechParams, "learn_color");
+        textToSpeech.speak(currentItem.getName(), TextToSpeech.QUEUE_FLUSH, speechParams, "learn_color");
     }
 
     private int dpToPx(int dp) {

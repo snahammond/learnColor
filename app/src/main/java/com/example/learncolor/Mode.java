@@ -1,6 +1,6 @@
 package com.example.learncolor;
 
-public enum ColorMode {
+public enum Mode {
     BASIC,
     ADVANCED
 }
