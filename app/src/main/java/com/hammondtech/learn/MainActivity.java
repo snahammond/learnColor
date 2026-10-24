@@ -1,4 +1,4 @@
-package com.example.learncolor;
+package com.hammondtech.learn;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.learncolor.databinding.ActivityMainBinding;
+import com.hammondtech.learn.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.Arrays;

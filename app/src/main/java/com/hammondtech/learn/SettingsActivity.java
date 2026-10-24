@@ -1,4 +1,4 @@
-package com.example.learncolor;
+package com.hammondtech.learn;
 
 import android.content.Intent;
 import android.graphics.Color;

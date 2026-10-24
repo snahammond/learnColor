@@ -1,4 +1,4 @@
-package com.example.learncolor;
+package com.hammondtech.learn;
 
 public class ColorChoice {
     private final String name;

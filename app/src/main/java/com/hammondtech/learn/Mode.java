@@ -1,4 +1,4 @@
-package com.example.learncolor;
+package com.hammondtech.learn;
 
 public enum Mode {
     BASIC,

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = 'com.example.learncolor'
+    namespace = 'com.hammondtech.learn'
     compileSdk = 34
 
     defaultConfig {
-        applicationId = 'com.example.learncolor'
+        applicationId = 'com.hammondtech.learn'
         minSdk = 24
         targetSdk = 34
         versionCode = 1
