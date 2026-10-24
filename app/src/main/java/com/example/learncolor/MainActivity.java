@@ -1,9 +1,7 @@
 package com.example.learncolor;
 
-import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -46,13 +44,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private MediaPlayer jinglePlayer;
     private int selectedJingleResId = SettingsActivity.DEFAULT_JINGLE;
     private int bounceSpeed = DEFAULT_BOUNCE_SPEED;
-    private ObjectAnimator shimmerAnimator;
     private ObjectAnimator pulseAnimator;
-    private ObjectAnimator labelAnimator;
     private ObjectAnimator previewBounceAnimator;
     private ObjectAnimator previewRotateAnimator;
-    private ValueAnimator previewAnimator;
-    private int displayedPreviewColor = Color.RED;
 
     private final List<LearningItem> basicColors = new ArrayList<>(Arrays.asList(
             LearningItem.fromColor("Red", Color.RED, R.drawable.learning_color_red),
@@ -109,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             LearningItem.fromShape("Star", Color.parseColor("#5ED7D1"), R.drawable.learning_shape_star)
     ));
 
-    private ShapePreviewView shapePreviewView;
     private LearningItemCardView activePreviewCard;
     private ColorMode currentMode = ColorMode.BASIC;
     private LearningType currentTopic = LearningType.COLORS;
@@ -134,14 +127,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             triggerPartyPopper();
             speakCurrentColor();
         });
-
-        shapePreviewView = new ShapePreviewView(this);
-        shapePreviewView.setVisibility(View.GONE);
-        ((FrameLayout) binding.colorPreview).addView(shapePreviewView,
-                new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                ));
 
         activePreviewCard = new LearningItemCardView(this, dpToPx(32));
         activePreviewCard.setVisibility(View.VISIBLE);
@@ -334,12 +319,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void updatePreview() {
-        final int targetColor = currentSelection.getColor();
         binding.colorLabel.setText(currentSelection.getName());
-        binding.colorLabel.setIncludeFontPadding(false);
-        binding.colorLabel.setSingleLine(true);
         binding.colorLabel.setVisibility(View.GONE);
         binding.glassOverlay.setVisibility(View.GONE);
+        binding.colorPreview.setBackgroundColor(Color.TRANSPARENT);
+        binding.colorPreview.setClipToOutline(false);
+        binding.colorPreview.setOutlineProvider(null);
 
         binding.colorPreview.setScaleX(1f);
         binding.colorPreview.setScaleY(1f);
@@ -350,123 +335,23 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (activePreviewCard != null) {
             activePreviewCard.bind(currentSelection, true);
             activePreviewCard.setVisibility(View.VISIBLE);
+            activePreviewCard.setScaleX(1f);
+            activePreviewCard.setScaleY(1f);
+            activePreviewCard.setTranslationX(0f);
+            activePreviewCard.setTranslationY(0f);
+            activePreviewCard.setRotation(0f);
         }
-
-        if (currentTopic == LearningType.NUMBERS) {
-            shapePreviewView.setVisibility(View.GONE);
-            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.colorPreview.setClipToOutline(false);
-            binding.colorPreview.setOutlineProvider(null);
-            animatePreviewToColor(Color.parseColor("#F7F4F0"));
-            return;
-        }
-
-        if (currentTopic == LearningType.SHAPES) {
-            shapePreviewView.setVisibility(View.VISIBLE);
-            shapePreviewView.setShapeName(currentSelection.getName(), currentSelection.getColor());
-            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.colorPreview.setClipToOutline(false);
-            binding.colorPreview.setOutlineProvider(null);
-            binding.colorPreview.setScaleX(1f);
-            binding.colorPreview.setScaleY(1f);
-            binding.colorPreview.setTranslationX(0f);
-            binding.colorPreview.setTranslationY(0f);
-            binding.colorPreview.setRotation(0f);
-            animatePreviewToColor(Color.parseColor("#F7F4F0"));
-            return;
-        }
-
-        shapePreviewView.setVisibility(View.GONE);
-        binding.colorPreview.setBackgroundColor(Color.TRANSPARENT);
-        animatePreviewToColor(targetColor);
-    }
-
-    private void animatePreviewToColor(int targetColor) {
-        if (previewAnimator != null) {
-            previewAnimator.cancel();
-        }
-
-        final int startColor = displayedPreviewColor;
-        final int effectiveStart = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : startColor;
-        final int effectiveTarget = currentTopic == LearningType.NUMBERS ? Color.parseColor("#F7F4F0") : targetColor;
-
-        previewAnimator = ValueAnimator.ofFloat(0f, 1f);
-        previewAnimator.setDuration(550);
-        previewAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator());
-        previewAnimator.addUpdateListener(animation -> {
-            float fraction = (float) animation.getAnimatedValue();
-            int blendedColor = (Integer) new ArgbEvaluator().evaluate(fraction, effectiveStart, effectiveTarget);
-            applyPreviewColor(blendedColor);
-        });
-        previewAnimator.addListener(new android.animation.AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(android.animation.Animator animation) {
-                displayedPreviewColor = effectiveTarget;
-            }
-        });
-        previewAnimator.start();
-    }
-
-    private void applyPreviewColor(int color) {
-        if (currentTopic == LearningType.NUMBERS) {
-            binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
-            binding.colorPreview.setClipToOutline(false);
-            binding.colorPreview.setOutlineProvider(null);
-            return;
-        }
-
-        GradientDrawable previewBackground = new GradientDrawable();
-        previewBackground.setShape(GradientDrawable.RECTANGLE);
-        previewBackground.setColor(color);
-        previewBackground.setCornerRadius(dpToPx(32));
-        previewBackground.setStroke(dpToPx(2), Color.argb(125, 255, 255, 255));
-        binding.colorPreview.setBackground(previewBackground);
-
-        GradientDrawable overlayBackground = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {
-                        Color.argb(140, 255, 255, 255),
-                        Color.argb(35, 255, 255, 255),
-                        Color.argb(110, 255, 255, 255)
-                }
-        );
-        overlayBackground.setShape(GradientDrawable.RECTANGLE);
-        overlayBackground.setCornerRadius(dpToPx(32));
-        overlayBackground.setStroke(dpToPx(1), Color.argb(90, 255, 255, 255));
-        binding.glassOverlay.setBackground(overlayBackground);
-
-        binding.colorPreview.setClipToOutline(true);
-        binding.colorPreview.setOutlineProvider(new android.view.ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, android.graphics.Outline outline) {
-                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpToPx(32));
-            }
-        });
-    }
-
-    private int blendWithWhite(int baseColor, float amount) {
-        int red = Color.red(baseColor);
-        int green = Color.green(baseColor);
-        int blue = Color.blue(baseColor);
-
-        int whiteRed = 255;
-        int whiteGreen = 255;
-        int whiteBlue = 255;
-
-        int blendedRed = (int) (red * (1f - amount) + whiteRed * amount);
-        int blendedGreen = (int) (green * (1f - amount) + whiteGreen * amount);
-        int blendedBlue = (int) (blue * (1f - amount) + whiteBlue * amount);
-
-        return Color.rgb(blendedRed, blendedGreen, blendedBlue);
     }
 
     private void startLivingPreviewAnimation() {
-        if (shimmerAnimator != null) shimmerAnimator.cancel();
         if (pulseAnimator != null) pulseAnimator.cancel();
-        if (labelAnimator != null) labelAnimator.cancel();
         if (previewBounceAnimator != null) previewBounceAnimator.cancel();
         if (previewRotateAnimator != null) previewRotateAnimator.cancel();
+
+        if (activePreviewCard == null) {
+            startJingleLoop();
+            return;
+        }
 
         binding.colorPreview.setScaleX(1f);
         binding.colorPreview.setScaleY(1f);
@@ -474,25 +359,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setTranslationY(0f);
         binding.colorPreview.setRotation(0f);
 
+        activePreviewCard.setScaleX(0.9f);
+        activePreviewCard.setScaleY(0.9f);
+        activePreviewCard.setPivotX(activePreviewCard.getWidth() / 2f);
+        activePreviewCard.setPivotY(activePreviewCard.getHeight() / 2f);
+
         int animationDuration = resolveBounceDuration(bounceSpeed);
 
-        shimmerAnimator = ObjectAnimator.ofFloat(binding.glassOverlay, "translationX", -100f, 100f, -100f);
-        shimmerAnimator.setDuration(Math.max(800, animationDuration));
-        shimmerAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-        shimmerAnimator.setRepeatMode(ObjectAnimator.REVERSE);
-        shimmerAnimator.start();
-
-        binding.colorPreview.post(() -> {
-            binding.colorPreview.setPivotX(binding.colorPreview.getWidth() / 2f);
-            binding.colorPreview.setPivotY(binding.colorPreview.getHeight() / 2f);
-            binding.colorPreview.setScaleX(0.35f);
-            binding.colorPreview.setScaleY(0.35f);
-        });
-
         pulseAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.35f, 1.18f, 0.9f, 1.12f, 1.0f)
+                activePreviewCard,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.9f, 1.06f, 1.0f),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.9f, 1.06f, 1.0f)
         );
         pulseAnimator.setDuration(animationDuration);
         pulseAnimator.setRepeatCount(ObjectAnimator.INFINITE);
@@ -500,48 +377,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         pulseAnimator.start();
 
         previewBounceAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                binding.colorPreview,
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -8f, 10f, -10f, 6f, 0f),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -14f, 10f, -6f, 0f)
+                activePreviewCard,
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, -6f, 8f, -5f, 0f),
+                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -10f, 6f, 0f)
         );
         previewBounceAnimator.setDuration(animationDuration);
         previewBounceAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewBounceAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewBounceAnimator.start();
 
-        previewRotateAnimator = ObjectAnimator.ofFloat(binding.colorPreview, View.ROTATION, -2f, 3f, -2f, 1f, 0f);
+        previewRotateAnimator = ObjectAnimator.ofFloat(activePreviewCard, View.ROTATION, -2f, 3f, -1f, 0f);
         previewRotateAnimator.setDuration(Math.max(1000, animationDuration + 200));
         previewRotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         previewRotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
         previewRotateAnimator.start();
 
-        binding.colorLabel.setScaleX(1f);
-        binding.colorLabel.setScaleY(1f);
-        float motionTravel = 6f + (bounceSpeed * 2.4f);
-        long motionDuration = Math.max(700, 1700 - (bounceSpeed * 100L));
-        labelAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                binding.colorLabel,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, 0.97f, 1.08f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.97f, 1.08f, 1.0f),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, -motionTravel, 0f)
-        );
-        labelAnimator.setDuration(motionDuration);
-        labelAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-        labelAnimator.setRepeatMode(ObjectAnimator.RESTART);
-        labelAnimator.start();
-
         startJingleLoop();
     }
 
     private void stopLivingPreviewAnimation() {
-        if (shimmerAnimator != null) {
-            shimmerAnimator.cancel();
-        }
         if (pulseAnimator != null) {
             pulseAnimator.cancel();
-        }
-        if (labelAnimator != null) {
-            labelAnimator.cancel();
         }
         if (previewBounceAnimator != null) {
             previewBounceAnimator.cancel();
@@ -619,20 +475,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return Math.max(600, 1800 - ((clampedSpeed - 1) * 120));
     }
 
-    private String getShapeGlyph(String shapeName) {
-        switch (shapeName) {
-            case "Circle": return "◯";
-            case "Triangle": return "△";
-            case "Square": return "□";
-            case "Rectangle": return "▭";
-            case "Pentagon": return "⬟";
-            case "Hexagon": return "⬡";
-            case "Star": return "★";
-            default: return "◯";
-        }
-    }
-
     private void triggerPartyPopper() {
+        if (activePreviewCard == null) {
+            return;
+        }
+
         final int[] popColors = new int[] {
                 Color.WHITE,
                 currentSelection.getColor(),
@@ -642,8 +489,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 Color.parseColor("#4DD0E1")
         };
 
-        int previewWidth = binding.colorPreview.getWidth();
-        int previewHeight = binding.colorPreview.getHeight();
+        int previewWidth = activePreviewCard.getWidth();
+        int previewHeight = activePreviewCard.getHeight();
+        if (previewWidth <= 0 || previewHeight <= 0) {
+            activePreviewCard.post(this::triggerPartyPopper);
+            return;
+        }
+
         int centerX = previewWidth / 2;
         int centerY = previewHeight / 2;
 
@@ -656,7 +508,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             particle.setLayoutParams(params);
             particle.setBackground(createCircleColor(popColors[i % popColors.length]));
             particle.setAlpha(1f);
-            binding.colorPreview.addView(particle);
+            activePreviewCard.addView(particle);
+            particle.bringToFront();
 
             float spreadX = previewWidth * 0.9f;
             float spreadY = previewHeight * 0.9f;
@@ -683,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             set.addListener(new android.animation.AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(android.animation.Animator animation) {
-                    binding.colorPreview.removeView(particle);
+                    activePreviewCard.removeView(particle);
                 }
             });
             set.start();
@@ -715,11 +568,4 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return Math.round(dp * density);
     }
 
-    private boolean isDarkColor(int color) {
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        double luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue);
-        return luminance < 180;
-    }
 }
