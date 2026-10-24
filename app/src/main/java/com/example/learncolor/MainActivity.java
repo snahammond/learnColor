@@ -54,65 +54,66 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private ValueAnimator previewAnimator;
     private int displayedPreviewColor = Color.RED;
 
-    private final List<ColorChoice> basicColors = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Red", Color.RED),
-            new ColorChoice("Yellow", Color.YELLOW),
-            new ColorChoice("Green", Color.GREEN),
-            new ColorChoice("Blue", Color.BLUE)
+    private final List<LearningItem> basicColors = new ArrayList<>(Arrays.asList(
+            LearningItem.fromColor("Red", Color.RED, R.drawable.learning_color_red),
+            LearningItem.fromColor("Yellow", Color.YELLOW, R.drawable.learning_color_yellow),
+            LearningItem.fromColor("Green", Color.GREEN, R.drawable.learning_color_green),
+            LearningItem.fromColor("Blue", Color.BLUE, R.drawable.learning_color_blue)
     ));
 
-    private final List<ColorChoice> advancedColors = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Red", Color.RED),
-            new ColorChoice("Orange", Color.rgb(255, 153, 0)),
-            new ColorChoice("Yellow", Color.YELLOW),
-            new ColorChoice("Green", Color.GREEN),
-            new ColorChoice("Blue", Color.BLUE),
-            new ColorChoice("Purple", Color.rgb(128, 0, 255)),
-            new ColorChoice("Pink", Color.rgb(255, 105, 180))
+    private final List<LearningItem> advancedColors = new ArrayList<>(Arrays.asList(
+            LearningItem.fromColor("Red", Color.RED, R.drawable.learning_color_red),
+            LearningItem.fromColor("Orange", Color.rgb(255, 153, 0), R.drawable.learning_color_orange),
+            LearningItem.fromColor("Yellow", Color.YELLOW, R.drawable.learning_color_yellow),
+            LearningItem.fromColor("Green", Color.GREEN, R.drawable.learning_color_green),
+            LearningItem.fromColor("Blue", Color.BLUE, R.drawable.learning_color_blue),
+            LearningItem.fromColor("Purple", Color.rgb(128, 0, 255), R.drawable.learning_color_purple),
+            LearningItem.fromColor("Pink", Color.rgb(255, 105, 180), R.drawable.learning_color_pink)
     ));
 
-    private final List<ColorChoice> basicNumbers = new ArrayList<>(Arrays.asList(
-            new ColorChoice("1", Color.rgb(255, 120, 120)),
-            new ColorChoice("2", Color.rgb(255, 190, 120)),
-            new ColorChoice("3", Color.rgb(120, 200, 120)),
-            new ColorChoice("4", Color.rgb(120, 170, 255)),
-            new ColorChoice("5", Color.rgb(180, 120, 255))
+    private final List<LearningItem> basicNumbers = new ArrayList<>(Arrays.asList(
+            LearningItem.fromNumber("1", Color.rgb(255, 120, 120), R.drawable.learning_number_1),
+            LearningItem.fromNumber("2", Color.rgb(255, 190, 120), R.drawable.learning_number_2),
+            LearningItem.fromNumber("3", Color.rgb(120, 200, 120), R.drawable.learning_number_3),
+            LearningItem.fromNumber("4", Color.rgb(120, 170, 255), R.drawable.learning_number_4),
+            LearningItem.fromNumber("5", Color.rgb(180, 120, 255), R.drawable.learning_number_5)
     ));
 
-    private final List<ColorChoice> advancedNumbers = new ArrayList<>(Arrays.asList(
-            new ColorChoice("1", Color.rgb(255, 120, 120)),
-            new ColorChoice("2", Color.rgb(255, 170, 95)),
-            new ColorChoice("3", Color.rgb(255, 210, 93)),
-            new ColorChoice("4", Color.rgb(120, 200, 120)),
-            new ColorChoice("5", Color.rgb(120, 170, 255)),
-            new ColorChoice("6", Color.rgb(130, 120, 255)),
-            new ColorChoice("7", Color.rgb(215, 120, 180)),
-            new ColorChoice("8", Color.rgb(255, 140, 180)),
-            new ColorChoice("9", Color.rgb(126, 205, 202)),
-            new ColorChoice("10", Color.rgb(180, 120, 95))
+    private final List<LearningItem> advancedNumbers = new ArrayList<>(Arrays.asList(
+            LearningItem.fromNumber("1", Color.rgb(255, 120, 120), R.drawable.learning_number_1),
+            LearningItem.fromNumber("2", Color.rgb(255, 170, 95), R.drawable.learning_number_2),
+            LearningItem.fromNumber("3", Color.rgb(255, 210, 93), R.drawable.learning_number_3),
+            LearningItem.fromNumber("4", Color.rgb(120, 200, 120), R.drawable.learning_number_4),
+            LearningItem.fromNumber("5", Color.rgb(120, 170, 255), R.drawable.learning_number_5),
+            LearningItem.fromNumber("6", Color.rgb(130, 120, 255), R.drawable.learning_number_6),
+            LearningItem.fromNumber("7", Color.rgb(215, 120, 180), R.drawable.learning_number_7),
+            LearningItem.fromNumber("8", Color.rgb(255, 140, 180), R.drawable.learning_number_8),
+            LearningItem.fromNumber("9", Color.rgb(126, 205, 202), R.drawable.learning_number_9),
+            LearningItem.fromNumber("10", Color.rgb(180, 120, 95), R.drawable.learning_number_10)
     ));
 
-    private final List<ColorChoice> basicShapes = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Circle", Color.parseColor("#FF7A59")),
-            new ColorChoice("Triangle", Color.parseColor("#F7C948")),
-            new ColorChoice("Square", Color.parseColor("#3CCB7F")),
-            new ColorChoice("Rectangle", Color.parseColor("#4C8DFF"))
+    private final List<LearningItem> basicShapes = new ArrayList<>(Arrays.asList(
+            LearningItem.fromShape("Circle", Color.parseColor("#FF7A59"), R.drawable.learning_shape_circle),
+            LearningItem.fromShape("Triangle", Color.parseColor("#F7C948"), R.drawable.learning_shape_triangle),
+            LearningItem.fromShape("Square", Color.parseColor("#3CCB7F"), R.drawable.learning_shape_square),
+            LearningItem.fromShape("Rectangle", Color.parseColor("#4C8DFF"), R.drawable.learning_shape_rectangle)
     ));
 
-    private final List<ColorChoice> advancedShapes = new ArrayList<>(Arrays.asList(
-            new ColorChoice("Circle", Color.parseColor("#FF7A59")),
-            new ColorChoice("Triangle", Color.parseColor("#F7C948")),
-            new ColorChoice("Square", Color.parseColor("#3CCB7F")),
-            new ColorChoice("Rectangle", Color.parseColor("#4C8DFF")),
-            new ColorChoice("Pentagon", Color.parseColor("#A66CFF")),
-            new ColorChoice("Hexagon", Color.parseColor("#FF5EBC")),
-            new ColorChoice("Star", Color.parseColor("#5ED7D1"))
+    private final List<LearningItem> advancedShapes = new ArrayList<>(Arrays.asList(
+            LearningItem.fromShape("Circle", Color.parseColor("#FF7A59"), R.drawable.learning_shape_circle),
+            LearningItem.fromShape("Triangle", Color.parseColor("#F7C948"), R.drawable.learning_shape_triangle),
+            LearningItem.fromShape("Square", Color.parseColor("#3CCB7F"), R.drawable.learning_shape_square),
+            LearningItem.fromShape("Rectangle", Color.parseColor("#4C8DFF"), R.drawable.learning_shape_rectangle),
+            LearningItem.fromShape("Pentagon", Color.parseColor("#A66CFF"), R.drawable.learning_shape_pentagon),
+            LearningItem.fromShape("Hexagon", Color.parseColor("#FF5EBC"), R.drawable.learning_shape_hexagon),
+            LearningItem.fromShape("Star", Color.parseColor("#5ED7D1"), R.drawable.learning_shape_star)
     ));
 
     private ShapePreviewView shapePreviewView;
+    private LearningItemCardView activePreviewCard;
     private ColorMode currentMode = ColorMode.BASIC;
     private LearningType currentTopic = LearningType.COLORS;
-    private ColorChoice currentSelection = basicColors.get(0);
+    private LearningItem currentSelection = basicColors.get(0);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +138,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         shapePreviewView = new ShapePreviewView(this);
         shapePreviewView.setVisibility(View.GONE);
         ((FrameLayout) binding.colorPreview).addView(shapePreviewView,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                ));
+
+        activePreviewCard = new LearningItemCardView(this, dpToPx(32));
+        activePreviewCard.setVisibility(View.VISIBLE);
+        ((FrameLayout) binding.colorPreview).addView(activePreviewCard,
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
@@ -233,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void setMode(ColorMode mode) {
         currentMode = mode;
-        List<ColorChoice> options = getCurrentOptions();
+        List<LearningItem> options = getCurrentOptions();
         currentSelection = options.get(0);
         updateModeControls();
         updateTopicHeader();
@@ -264,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return "Choose a color";
     }
 
-    private List<ColorChoice> getCurrentOptions() {
+    private List<LearningItem> getCurrentOptions() {
         if (currentTopic == LearningType.NUMBERS) {
             return currentMode == ColorMode.BASIC ? basicNumbers : advancedNumbers;
         }
@@ -297,58 +306,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void updateColorStrip() {
         binding.colorBar.removeAllViews();
-        List<ColorChoice> options = getCurrentOptions();
-        int swatchHeight = dpToPx(42);
-        int cornerRadius = dpToPx(10);
+        List<LearningItem> options = getCurrentOptions();
+        int swatchHeight = dpToPx(52);
+        int cornerRadius = dpToPx(12);
 
-        for (ColorChoice choice : options) {
-            Button swatch = new Button(this);
+        for (LearningItem choice : options) {
+            LearningItemCardView swatch = new LearningItemCardView(this, cornerRadius);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0,
                     swatchHeight,
                     1f
             );
-            params.setMargins(3, 3, 3, 3);
+            params.setMargins(4, 4, 4, 4);
             swatch.setLayoutParams(params);
-            swatch.setPadding(0, 0, 0, 0);
-            swatch.setAllCaps(false);
-            swatch.setMinWidth(0);
-            swatch.setMinHeight(0);
-            swatch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
-            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.94f);
+            swatch.setAlpha(choice.equals(currentSelection) ? 1.0f : 0.96f);
+            swatch.bind(choice, choice.equals(currentSelection));
             swatch.setOnClickListener(v -> selectColor(choice));
-            swatch.setStateListAnimator(null);
-            swatch.setElevation(0f);
-            swatch.setTranslationZ(0f);
-            swatch.setBackgroundTintList(null);
-            swatch.setBackgroundTintMode(null);
-            swatch.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            swatch.setIncludeFontPadding(false);
-
-            GradientDrawable border = new GradientDrawable();
-            border.setShape(GradientDrawable.RECTANGLE);
-            border.setColor(choice.getColor());
-            border.setCornerRadius(cornerRadius);
-            border.setStroke(2, choice.equals(currentSelection) ? Color.WHITE : Color.argb(120, 255, 255, 255));
-            swatch.setBackground(border);
-
-            if (currentTopic == LearningType.NUMBERS) {
-                swatch.setText(choice.getName());
-                swatch.setTextColor(Color.WHITE);
-                swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            } else if (currentTopic == LearningType.SHAPES) {
-                swatch.setText(getShapeGlyph(choice.getName()));
-                swatch.setTextColor(Color.WHITE);
-                swatch.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            } else {
-                swatch.setText("");
-            }
-
             binding.colorBar.addView(swatch);
         }
     }
 
-    private void selectColor(ColorChoice choice) {
+    private void selectColor(LearningItem choice) {
         currentSelection = choice;
         updateColorStrip();
         updatePreview();
@@ -360,6 +338,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorLabel.setText(currentSelection.getName());
         binding.colorLabel.setIncludeFontPadding(false);
         binding.colorLabel.setSingleLine(true);
+        binding.colorLabel.setVisibility(View.GONE);
+        binding.glassOverlay.setVisibility(View.GONE);
 
         binding.colorPreview.setScaleX(1f);
         binding.colorPreview.setScaleY(1f);
@@ -367,20 +347,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         binding.colorPreview.setTranslationY(0f);
         binding.colorPreview.setRotation(0f);
 
+        if (activePreviewCard != null) {
+            activePreviewCard.bind(currentSelection, true);
+            activePreviewCard.setVisibility(View.VISIBLE);
+        }
+
         if (currentTopic == LearningType.NUMBERS) {
-            binding.colorLabel.setTextColor(targetColor);
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 320f);
-            binding.colorLabel.setGravity(android.view.Gravity.CENTER);
-            binding.colorLabel.setBackground(null);
-            binding.colorLabel.setPadding(0, 0, 0, 0);
-            binding.colorLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-            binding.colorLabel.setAlpha(1f);
-            binding.colorLabel.setShadowLayer(18f, 0f, 0f, Color.WHITE);
-            binding.colorLabel.setTranslationY(0f);
-            binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.GONE);
             binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
             binding.colorPreview.setClipToOutline(false);
             binding.colorPreview.setOutlineProvider(null);
             animatePreviewToColor(Color.parseColor("#F7F4F0"));
@@ -388,16 +362,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         if (currentTopic == LearningType.SHAPES) {
-            binding.colorLabel.setTextColor(Color.parseColor("#1F2937"));
-            binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f);
-            binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
-            binding.colorLabel.setPadding(dpToPx(22), dpToPx(8), dpToPx(22), dpToPx(8));
-            binding.colorLabel.setBackground(null);
-            binding.colorLabel.setVisibility(View.VISIBLE);
             shapePreviewView.setVisibility(View.VISIBLE);
             shapePreviewView.setShapeName(currentSelection.getName(), currentSelection.getColor());
             binding.colorPreview.setBackgroundColor(Color.parseColor("#F7F4F0"));
-            binding.glassOverlay.setBackgroundColor(Color.argb(55, 255, 255, 255));
             binding.colorPreview.setClipToOutline(false);
             binding.colorPreview.setOutlineProvider(null);
             binding.colorPreview.setScaleX(1f);
@@ -410,14 +377,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
         shapePreviewView.setVisibility(View.GONE);
-        binding.colorLabel.setVisibility(View.VISIBLE);
-        binding.colorLabel.setTextColor(Color.WHITE);
-        binding.colorLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
-        binding.colorLabel.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
-        binding.colorLabel.setPadding(dpToPx(22), dpToPx(12), dpToPx(22), dpToPx(12));
-        binding.colorLabel.setShadowLayer(0f, 0f, 0f, 0);
         binding.colorPreview.setBackgroundColor(Color.TRANSPARENT);
-        binding.glassOverlay.setBackgroundColor(Color.TRANSPARENT);
         animatePreviewToColor(targetColor);
     }
 
